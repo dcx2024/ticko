@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/tickets-main/TIcket Main Update/create_event_form/Create_event_form1_styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+    <title>Event Details</title>
+</head>
+<body>
+    <div class="tabs">
+        <button id="eventTab" class="active" onclick="switchTab('event')">Event Details</button>
+        <button id="ticketTab" onclick="switchTab('ticket')">Ticket Details</button>
+    </div>
+    
+    <!-- Event Form -->
+    <div id="eventForm" class=" active-tab tab-content">
+        <h2>Event Details</h2>
+        <form id="eventDetailsForm">
+            <div>
+                <input type="text" id="event-name" placeholder="Event Name" required>
+            </div>
+            <div>
+                <input type="text" id="event-description" placeholder="Description" required>
+            </div>
+            <div>
+                <input type="date" id="date-input" placeholder="Event Date" required>
+            </div>
+            <div>
+                <input type="file" id="event-image" placeholder="Upload Image" accept="image/*" required>
+            </div>
+            <div>
+                <input type="text" id="event-location" placeholder="Location" required>
+            </div>
+            <div>
+                <input type="datetime-local" id="start-time" name="start_time" placeholder="Start Time">
+                <input type="datetime-local" id="end-time" name="end_time" placeholder="End Time">                
+            </div>
+            <div>
+                <select id="event-status" required>
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div>
+                <input type="hidden" id="event-id" value="some_generated_event_id_or_value" required> <!-- Hidden event ID -->
+            </div>
+            
+            <button type="submit">Submit Event Details</button>
+        </form>
+    </div>
+
+    <!-- Ticket Form -->
+    <div id="ticketForm" class="tab-content">
+        <h2>Ticket Details</h2>
+        <form id="ticketDetailsForm">
+            <div id="ticketTypesContainer">
+                <!-- Dynamic ticket forms will be added here -->
+                <div class="ticket-form-group" id="ticketForm1">
+                    <label for="ticketType1">Ticket Type:</label><br>
+                    <input type="text" id="ticketType1" name="ticketType[]" required placeholder="Ticket Type"><br><br>
+
+                    <label for="ticketPrice1">Ticket Price:</label><br>
+                    <input type="number" id="ticketPrice1" name="ticketPrice[]" required placeholder="Price"><br><br>
+
+                    <label for="ticketAvailability1">Available Tickets:</label><br>
+                    <input type="number" id="ticketAvailability1" name="ticketAvailability[]" required placeholder="Availability"><br><br>
+
+
+                    <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm1')">Remove Ticket Type</button>
+                </div>
+            </div>
+            <button type="button" onclick="addTicketForm()">Add Another Ticket Type</button><br><br>
+            <button type="submit">Submit Ticket Details</button>
+        </form>
+        <a href="../events/event.html"></a>
+    </div>
+
+    <script>
+        // Check if the user is an admin
+        function checkIfAdmin() {
+            try {
+                const token = sessionStorage.getItem('token');  // Retrieve the token from sessionStorage
+                if (!token) {
+                    alert("You are not logged in.");
+                    return false;
+                }
+
+                const decoded = jwt_decode(token);
+                if (decoded.role === 'admin') {
+                    return true;
+                } else {
+                    alert('You are not authorized to create events.');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+                return false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkIfAdmin()) {
+                // Redirect non-admin users away from the event creation page
+                window.location.href = "../index.html";  // Or any page you want to redirect to
+            }
+        });
+
+        // Switch tabs between event and ticket forms
+        function switchTab(tab) {
+            const eventForm = document.getElementById('eventForm');
+            const ticketForm = document.getElementById('ticketForm');
+            const eventTab = document.getElementById('eventTab');
+            const ticketTab = document.getElementById('ticketTab');
+            
+            if (tab === 'event') {
+                eventForm.classList.add('active-tab');
+                ticketForm.classList.remove('active-tab');
+                eventTab.classList.add('active');
+                ticketTab.classList.remove('active');
+            } else {
+                ticketForm.classList.add('active-tab');
+                eventForm.classList.remove('active-tab');
+                ticketTab.classList.add('active');
+                eventTab.classList.remove('active');
+            }
+        }
+
+        let ticketCount = 1; // Start with one ticket type form
+
+        // Add a new ticket form dynamically
+        function addTicketForm() {
+            ticketCount++;
+            const ticketTypesContainer = document.getElementById('ticketTypesContainer');
+            
+            const newTicketForm = document.createElement('div');
+            newTicketForm.classList.add('ticket-form-group');
+            newTicketForm.id = `ticketForm${ticketCount}`;
+
+            newTicketForm.innerHTML = `
+                <label for="ticketType${ticketCount}">Ticket Type:</label><br>
+                <input type="text" id="ticketType${ticketCount}" name="ticketType[]" required placeholder="Ticket Type"><br><br>
+
+                <label for="ticketPrice${ticketCount}">Ticket Price:</label><br>
+                <input type="number" id="ticketPrice${ticketCount}" name="ticketPrice[]" required placeholder="Price"><br><br>
+
+                <label for="ticketAvailability${ticketCount}">Available Tickets:</label><br>
+                <input type="number" id="ticketAvailability${ticketCount}" name="ticketAvailability[]" required placeholder="Availability"><br><br>
+
+                <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm${ticketCount}')">Remove Ticket Type</button>
+            `;
+
+            ticketTypesContainer.appendChild(newTicketForm);
+        }
+
+        // Remove a dynamically created ticket form
+        function removeTicketForm(formId) {
+            const formToRemove = document.getElementById(formId);
+            formToRemove.remove();
+        }
+
+        let eventId = null;  // Global variable, accessible across your script
+
+        document.getElementById('eventDetailsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const token = sessionStorage.getItem('token');
+            if (!token) return alert('Not authenticated');
+
+
+
+            const formData = new FormData();
+            const eventName = document.getElementById('event-name').value;
+            const eventDescription = document.getElementById('event-description').value;
+            const eventDate = document.getElementById('date-input').value;
+            const eventImage = document.getElementById('event-image').files[0];
+            const eventLocation = document.getElementById('event-location').value;
+            const eventStatus = document.getElementById('event-status').value;
+const start_time=document.getElementById('start-time').value;
+const end_time=document.getElementById('end-time').value;
+            if (!eventName || !eventDescription || !eventDate || !eventImage || !eventLocation || !eventStatus) {
+                alert('Please complete all fields.');
+                return;
+            }
+
+            const fileType = eventImage.type;
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(fileType)) {
+                alert('Please upload a valid image (jpeg, png, gif)');
+                return;
+            }
+
+            formData.append('name', eventName);
+            formData.append('description', eventDescription);
+            formData.append('date', eventDate);
+            formData.append('image', eventImage);
+            formData.append('location', eventLocation);
+            formData.append('start_time', start_time);
+formData.append('end_time', end_time);
+
+            formData.append('status', eventStatus);
+
+            try {
+                const res = await fetch('http://localhost:3000/api/event/createEvents', {
+                    method: 'POST',
+                    headers: {
+      
+      'Authorization': `Bearer ${token}`
+    },
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert('Error: ' + errorData.message);
+                    return;
+                }
+
+                const data = await res.json();
+                sessionStorage.setItem('eventId', data.id);
+                
+                alert(data.message);
+                alert('Event created successfully! Now you can add ticket details.');
+                switchTab('ticket');
+            } catch (error) {
+                console.error('Error creating event:', error);
+                alert('Error creating event. Please try again later.');
+            }
+        });
+
+        document.getElementById('ticketDetailsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const eventId = sessionStorage.getItem('eventId');
+            console.log('Using eventId:', eventId);
+
+            if (!eventId) {
+                alert('Event ID not found. Please create the event first.');
+                return;
+            }
+
+            const ticketGroups = document.querySelectorAll('.ticket-form-group');
+            for (let group of ticketGroups) {
+                const type = group.querySelector('input[name="ticketType[]"]').value;
+                const price = group.querySelector('input[name="ticketPrice[]"]').value;
+                const availability = group.querySelector('input[name="ticketAvailability[]"]').value;
+
+                const ticketData = {
+                    event_id: eventId,
+                    type_name: type,
+                    price: price,
+                    available_tickets: availability
+                };
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/ticket/createTicketTypes', {
+                        method: 'POST',
+                        headers: { 'Content-type': 'application/json' },
+                        body: JSON.stringify(ticketData)
+                    });
+
+                    const result = await response.json();
+                    console.log(result);
+                    if (!result.status) {
+                        alert(`Error saving ticket: ${result.message}`);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error sending ticket data:', error);
+                    alert('Could not send ticket to server.');
+                    return;
+                }
+            }
+            alert('All tickets saved successfully!');
+            // redirect to events page
+            window.location.replace("../events/event.html");
+
+        });
+    </script>
+</body>
+</html>

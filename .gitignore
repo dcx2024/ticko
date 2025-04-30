@@ -1,0 +1,4 @@
+backend/.env
+backend/fileUpload/Uploads
+backend/tickets
+node_modules

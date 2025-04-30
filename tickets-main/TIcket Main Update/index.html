@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="landingpage.css">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <img src="/images/1744162770374.jpg" alt="">
+        <div class="nav">
+            
+        <nav>
+            <a href="./events/event.html">Events</a>
+            <a href="">Vemues</a>
+            <a href="">Artists</a>
+            <a href="">Deals</a>
+        </nav>
+        <div class="acctBtn">
+        <button><a href="/tickets-main/TIcket Main Update/signUp/Sign up.html">Sign In</a></button>
+        <button><a href="/tickets-main/TIcket Main Update/login/Login.html">Log in</a></button>
+    </div>
+    </div>
+    </header>
+    <section class="hero-section">
+        <h1>Discover and book<br>
+            amazing live<br>
+            experiences
+        </h1>
+        <p>FInd tickets for concerts,sports,theater and more in your area</p>
+
+        <button window.location.href='./events/event.html'>View Events</button>
+        <button window.location.href='./'><a href="./createEvent/create_event page.html">CreateEvent</a></button>
+    </section>
+    <section class="featured-events">
+        <div class="feature-top">
+            <h2>featured-events</h2>
+        <a>View all</a> 
+    </div>
+        <!--get the most popular events-->
+        <!--with the flyer,event name,date,location and base ticket price-->
+        <div></div>
+        <ul id="featured-events-list">
+
+        </ul>
+        <button>Get tickets</button>
+        <button>Learn More</button>
+    </section>
+    <Section class="popular-events">
+        <div class="popular-top">
+            <h2>Popular-events</h2>  
+        <a>View all</a>
+        <div>
+            <div class="items"><!--Would dynamically be givwn the infor from the server--></div>
+            <div class="items"></div>
+            <div class="items"></div>
+            <div class="items"></div>
+        </div>
+    </div>
+        <!--Get the events with the nost tickets sold within the month-->
+    </Section>
+    <section class="neverMiss">
+        <div>
+        <h2>Never miss an event
+            <br> again</h2>
+            <p>Subscribe to us on all our platforms and be the first to know about the biggest and baddest events
+
+            </p>
+            <input type="email">
+            <button>Subscribe</button>
+        </div>
+        <img src="" alt="">
+    </section>
+<footer>
+    <div>
+        <!--logo-->
+        <p>The modern way to discover and  book ticktes for the events</p>
+    </div>
+
+    <div class="Company">
+        <h3>Company</h3>
+        <ul>
+            <li><a href="">About us</a></li>
+            <li><a href="">Careers</a></li>
+            <li><a href="">Press</a></li>
+            <li><a href="">Blog</a></li>
+        </ul>
+    </div>
+    <div class="Support">
+        <h3>Suport</h3>
+        <ul>
+            <li><a href="">Help Center</a></li>
+            <li><a href="">Contact US</a></li>
+            <li><a href="">FAQs</a></li>
+            <li><a href="">Accessibility</a></li>
+        </ul>
+    </div>
+    <div class="social-icons">
+        <!--facebook,twitter,instagram-->
+    </div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{
+        fetch('http://localhost:3000/api/event/getEvents')
+        .then(response => response.json())
+        .then(event =>{
+            const events = event;
+            const list = document.getElementById('featured-events-list');
+            events.forEach(event =>{
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${event.name}</strong><br>
+                <img src='${event.image}'>
+                ${new Date(event.date).toLocaleDateString()} @${event.location}`
+list.appendChild(li)
+            })
+        }).catch(error =>{
+            console.error('Error loading events:' ,error)
+        })
+    })
+</script>
+</body>
+</html>

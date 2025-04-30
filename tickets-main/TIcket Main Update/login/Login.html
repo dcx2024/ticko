@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bento Social Login</title>
+  <link rel="stylesheet" href="Login styles.css">
+ 
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="logo"></div>
+      <h1>Login</h1>
+      <form id="login">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit" id="submit">Sign in</button>
+        <div class="google-signin">
+          <button type="button" class="google-button">
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon">
+            Sign in with Google
+          </button>
+        </div>
+        <p id="message"></p>
+        <p>
+          Don't have an account? <a href="../signUp/Sign up.html">Sign up, it's free!</a>
+        </p>
+      </form>
+    </div>
+  </div>
+  <script>
+  document.getElementById('login').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    console.log('Response Status:', res.status);
+    console.log('Response Headers:', res.headers);
+
+    let data = {};
+    // Try to parse the response as JSON
+    
+      data = await res.json();
+      console.log('Response Data:', data);
+      console.log('Role:', data.user.role); // Make sure this outputs 'admin'
+
+    console.log('User role:', data.user.role);
+
+
+    // If the response is not ok, handle the error
+    if (!res.ok) {
+      // Log the data to help debug why the error happened
+      console.error('Error details:', data);
+      alert(data.message || 'Login failed');
+      return;
+    }
+
+    
+    // If login is successful, store the token and redirect
+    sessionStorage.setItem('token', data.token);
+   
+    alert(data.message); // Display success message
+    const userId = data.user?.id || data.userId; // Adjust if your backend returns `user` or just `userId`
+
+    console.log('Response Data:', data);
+    console.log('Logged in user:', data.user);
+    const redirectUrl = data.user.role === 'admin' ? `../adminProfile/admin.html?userId=${data.user.id}` : `../user_profile/user.html?userId=${data.user.id}`;
+console.log("Redirecting to: ", redirectUrl);
+window.location.href = redirectUrl;
+
+
+
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Something went wrong. Please try again.');
+  }
+});
+
+</script>
+</body>
+</html>

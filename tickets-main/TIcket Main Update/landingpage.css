@@ -1,0 +1,161 @@
+*{
+    margin: 0;
+    padding:0;
+}
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 90%;
+    display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    padding: 23px 76px 15px 75px
+}
+
+
+
+.nav{
+    display: flex;
+   gap: 25px;
+   align-items: center;
+}
+
+nav {
+display: flex;
+gap: 15px;
+}
+
+header img{
+    width:100px;
+    mix-blend-mode: multiply;
+}
+.acctBtn{
+    display: flex;
+    gap: 10px;
+
+}
+
+.acctBtn button{
+    background-color: blueviolet;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 5px;
+
+    color: white;
+}
+
+
+.hero-section{
+    background-color: rgba(201, 149, 251, 0.415);
+    
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  
+}
+.hero-section h1{
+    font-size: 4rem;
+    font-weight: 800;
+}
+
+.hero-section p{
+    font-size: 1rem;
+    margin: 8px auto;
+}
+
+.hero-section button{
+    padding: 10px 12px;
+    border-radius: 5px;
+    border: 1px solid rgb(255, 255, 255);
+    outline: none;
+    background-color: white;
+
+}
+
+.featured-events{
+    background-color: white;
+    padding: 60px 0px 60px 20px;
+   
+}
+
+.feature-top{
+    display: flex;
+    justify-content: space-between;
+    width: 90%
+}
+
+.featured-events button{
+    background-color: blueviolet;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 5px;
+
+    color: white;
+
+}
+
+.popular-events{
+ padding: 60px 0px 60px 20px;
+    background-color: white;
+}
+
+.popular-top{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.neverMiss{
+    display: flex;
+    text-align: left;
+    padding: 60px 0px 60px 20px;
+    background-color: rgba(232, 232, 232, 0.397);
+}
+
+.neverMiss p{
+    width:40%  ;
+    padding: 10px 0 10px 0
+}
+
+.neverMiss button{
+    background-color: blueviolet;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+
+    color: white;
+
+}
+
+.neverMiss input{
+    padding: 5px 12px;
+}
+
+footer{
+    display: flex;
+    justify-content: space-between;
+    padding: 60px 0px 60px 20px;
+
+}
+
+footer p{
+    width: 70% 
+}
+
+footer ul{
+    list-style-type: none;
+    padding: 3px 4px 3px 5px;
+    
+}
+
+a{
+    text-decoration: none;
+}

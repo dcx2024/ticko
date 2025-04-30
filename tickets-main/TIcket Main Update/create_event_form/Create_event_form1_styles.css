@@ -1,0 +1,38 @@
+.tab-content {
+    display: none;
+}
+.active-tab {
+    display: block;
+}
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+.tabs button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    margin-right: 5px;
+}
+.tabs button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.ticket-form-group {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.ticket-form-group input {
+    margin-right: 10px;
+}
+
+.remove-ticket-btn {
+    color: red;
+    cursor: pointer;
+    margin-top: 5px;
+}

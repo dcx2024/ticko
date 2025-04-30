@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet"    href="user.css">
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</head>
+<body>
+  <div class="tabs">
+    <button id="home" >Home</button>
+    <button id="Dashboard" class="active" onclick="switchTab('Dashboard')">Dashboard</button>
+    <button id="Security" onclick="switchTab('Security')">Security</button>
+  </div>
+  <div id="displayDashboard" class="tab-content active-tab">
+    <div class="userCard">
+        <p id="username"></p><!--Pull the users name from the db-->
+        <p id="email"></p><!--Pull the users email address from the db-->
+    </div>
+    <div class="purchasedTicket">
+        <ul id="ticketList"></ul>
+        <!--Show the recently purchase tickets of user-->
+        <!--SHould be aligned with user card-->
+    </div>
+    <div class="FavouriteEvents">
+        <!--SHould contian fav events-->
+    </div>
+  </div>
+  <div id="displaySecurity" class="tab-content">
+    <label for="changeEmail">Change Email</label><br>
+    <input type="text" id="changeEmail" name="email" Placeholder="ENter new Email address">
+    <button id="submitEmail">Change Email</button>
+    <label for="changePasswordl">Change Password</label><br>
+    <input type="password" id="changePassword" name="password" Placeholder="ENter new Password">
+    <button id="submitPassword">Change Password</button>
+  </div>
+    <!-- Add this to your HTML -->
+<div id="confirmationModal" style="display: none;">
+    <div class="modalContent">
+      <p>Are you sure you want to delete your account? This action is irreversible.</p>
+      <button id="confirmDelete">Yes, delete my account</button>
+      <button id="cancelDelete">Cancel</button>
+    </div>
+  </div>
+  
+  <button id="Delete">Delete My Account</button>
+  
+    <button><a href="../events/event.html"> out our events</a></button>
+    <script>
+      function switchTab(tab){
+  const displayDashboard = document.getElementById('displayDashboard');
+  const dashboardTab = document.getElementById('Dashboard');
+  const securityTab = document.getElementById('Security');
+  const displaySecurity = document.getElementById('displaySecurity');
+
+  if(tab === 'Dashboard'){
+    displayDashboard.classList.add('active-tab');
+    displaySecurity.classList.remove('active-tab');
+    dashboardTab.classList.add('active');
+    securityTab.classList.remove('active');
+  } else {
+    displayDashboard.classList.remove('active-tab');
+    displaySecurity.classList.add('active-tab');
+    dashboardTab.classList.remove('active');
+    securityTab.classList.add('active');
+  }
+}
+
+
+document.getElementById('submitEmail').addEventListener('click', async () => {
+    const newEmail = document.getElementById('changeEmail').value.trim();
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+        alert('Please login first');
+        return;
+    }
+
+    const decoded = jwt_decode(token); 
+    const userId = decoded.id; // make sure your token contains user id as `id`
+
+    try {
+        const res = await fetch('http://localhost:3000/api/reset/email', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: newEmail, userId: userId })
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to update email');
+        }
+
+        const data = await res.json();
+        alert('Email updated successfully');
+        document.getElementById('email').textContent = data.email;
+    } catch (err) {
+        console.error('Error changing email:', err);
+        alert('Failed to change email. Please try again.');
+    }
+});
+
+
+
+document.getElementById('submitPassword').addEventListener('click', async () => {
+    const newPassword = document.getElementById('changePassword').value.trim();
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+        alert('Please login first');
+        return;
+    }
+
+    const decoded = jwt_decode(token); 
+    const userId = decoded.id;
+
+    try {
+        const res = await fetch('http://localhost:3000/api/reset/password', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: newPassword, userId: userId })
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to update password');
+        }
+
+        const data = await res.json();
+        alert('Password updated successfully');
+    } catch (err) {
+        console.error('Error changing password:', err);
+        alert('Failed to change password. Please try again.');
+    }
+});
+
+
+
+          document.addEventListener('DOMContentLoaded', async () => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+        alert('Please login first');
+        window.location.href = '../login/Login.html';
+        return;
+    }
+
+    try {
+    const res = await fetch('http://localhost:3000/api/userProfile/profile', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch user data');
+    }
+
+    const data = await res.json();
+    console.log('User data:', data); 
+
+    document.getElementById('username').textContent = data.name;
+    document.getElementById('email').textContent = data.email;
+
+    const ticketList = document.getElementById('ticketList');
+    data.tickets.forEach(ticket => {
+      const eventName = data.eventNames[ticket.event_id - 1] || "Unknown Event";
+        const li = document.createElement('li');
+        li.textContent = `${eventName} - ${ticket.purchased_at}`;
+        ticketList.appendChild(li);
+    });
+} catch (err) {
+    console.error('Error fetching user profile', err);
+}
+  })
+        
+  document.getElementById('Delete').addEventListener("click", () => {
+  // Show the confirmation modal
+  document.getElementById('confirmationModal').style.display = 'flex';
+});
+
+document.getElementById('cancelDelete').addEventListener("click", () => {
+  // Close the modal without doing anything
+  document.getElementById('confirmationModal').style.display = 'none';
+});
+
+document.getElementById('confirmDelete').addEventListener("click", async () => {
+  const token = sessionStorage.getItem('token');
+
+  if (!token) {
+    alert('You must be logged in');
+    return;
+  }
+
+  try {
+    const decoded = jwt_decode(token);
+    const email = decoded.email;
+
+    // Proceed with the delete request
+    const res = await fetch('http://localhost:3000/api/auth/deleteUser', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert('Your account has been deleted.');
+      sessionStorage.clear();
+      window.location.href = '../index.html';
+    } else {
+      alert(data.error || 'Failed to delete account.');
+    }
+
+  } catch (err) {
+    console.error('Error:', err);
+    alert('Something went wrong');
+  }
+
+  // Close the modal after action is taken
+  document.getElementById('confirmationModal').style.display = 'none';
+});
+
+        
+    </script>
+</body>
+</html>

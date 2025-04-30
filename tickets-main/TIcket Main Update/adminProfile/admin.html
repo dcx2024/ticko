@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin-dashboard.css">
+</head>
+
+<body>
+  <div class="admin-dashboard">
+    <h1>Event Stats Dashboard</h1>
+
+    <!-- Event Stats Section -->
+    <div class="stats-section">
+      <div class="stat-box">
+        <h3>Total Sales</h3>
+        <p id="totalSales">Loading...</p>
+      </div>
+      <div class="stat-box">
+        <h3>Total Ticket Sales</h3>
+        <p id="totalTicketSales">Loading...</p>
+      </div>
+      <div class="stat-box">
+        <h3>Standard Ticket</h3>
+        <p id="standardTicket">Loading...</p>
+      </div>
+      <div class="stat-box">
+        <h3>Ticket Type Breakdown</h3>
+        <div id="ticketTypeBreakdown">Loading...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const token = sessionStorage.getItem('token');
+    const params = new URLSearchParams(window.location.search);
+    const adminId = params.get('userId');
+  
+    if (!token) {
+      alert('You need to log in first!');
+      window.location.href = '/login.html';
+    }
+  
+    const getEventIdFromAdmin = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/dashboard/${adminId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+  
+        if (!response.ok) throw new Error("Failed to fetch event ID");
+  
+        const data = await response.json();
+        console.log(data)
+        return data.event_id;
+      } catch (error) {
+        console.error("Error fetching event ID:", error);
+        return null;
+      }
+    };
+  
+    const fetchEventStats = async (eventId) => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/dashboard/${eventId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+  
+        if (!response.ok) throw new Error("Failed to fetch dashboard stats");
+  
+        const data = await response.json();
+  
+        document.getElementById('totalSales').textContent = `$${data.totalSales}`;
+        document.getElementById('totalTicketSales').textContent = data.totalTickets;
+  
+        const standard = data.ticketTypes.find(t => t.type_name === 'Standard');
+        if (standard) {
+          document.getElementById('standardTicket').textContent = `${standard.type_name}: ${standard.available_tickets} available`;
+        } else {
+          document.getElementById('standardTicket').textContent = `Standard ticket not found`;
+        }
+  
+        let breakdownHTML = '<ul>';
+        data.ticketTypes.forEach(ticket => {
+          breakdownHTML += `<li>${ticket.type_name}: ${ticket.sold_tickets} sold / ${ticket.available_tickets} available</li>`;
+        });
+        breakdownHTML += '</ul>';
+        document.getElementById('ticketTypeBreakdown').innerHTML = breakdownHTML;
+  
+      } catch (error) {
+        console.error("Error fetching event stats:", error);
+        alert("Failed to load dashboard stats.");
+      }
+    };
+  
+    const init = async () => {
+      const eventId = await getEventIdFromAdmin();
+      
+      if (eventId) {
+        await fetchEventStats(eventId);
+      } else {
+        alert("No event ID found for this admin.");
+      }
+    };
+  
+    window.onload = init;
+  </script>
+
+
+  <style>
+    /* Basic Styles for the Admin Dashboard */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .admin-dashboard {
+      margin: 20px;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .stats-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin-top: 30px;
+    }
+
+    .stat-box {
+      background-color: #fff;
+      padding: 20px;
+      margin: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 200px;
+      text-align: center;
+    }
+
+    .stat-box h3 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .stat-box p {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #ticketTypeBreakdown ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #ticketTypeBreakdown li {
+      margin: 5px 0;
+      color: #555;
+    }
+  </style>
+</body>
+
+</html>

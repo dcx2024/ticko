@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Payment</title>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <style>
+    .hidden { display: none; }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select, button {
+      width: 100%;
+      margin-top: 5px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Complete Your Payment</h1>
+    <div class="event-details">
+      <h2 id="eventName"></h2>
+      <p id="eventAmount"></p>
+    </div>
+
+    <form id="paymentForm">
+      <label for="email">Your Email:</label>
+      <input type="email" id="email" name="email" required placeholder="Enter your email" />
+
+      <label class="checkbox">
+        <input type="checkbox" id="buyForFriend">
+        Buy for a Friend
+      </label>
+
+      <div id="friendEmailContainer" class="hidden">
+        <label for="friendEmail">Friend's Email:</label>
+        <input type="email" id="friendEmail" placeholder="Enter friend's email">
+      </div>
+
+      <label for="ticketType">Choose Ticket Type:</label>
+      <select id="ticketType" name="ticketType" required>
+        <option value="">-- Select a Ticket Type --</option>
+      </select>
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" name="quantity" min="1" value="1" required />
+      
+      <input type="hidden" id="eventId" name="eventId" />
+
+      <button type="submit">Proceed to Payment</button>
+    </form>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventId = urlParams.get('id');
+  console.log("Extracted event ID:", eventId);
+
+  if (!eventId) {
+    alert('No event selected. Please go back and select an event.');
+    return;
+  }
+
+  try {
+    const eventRes = await fetch(`http://localhost:3000/api/event/${eventId}`);
+    if (!eventRes.ok) {
+      alert('Failed to load event details.');
+      return;
+    }
+
+    const eventData = await eventRes.json();
+    document.getElementById('eventName').textContent = eventData.name;
+    document.getElementById('eventId').value = eventData.id;
+
+    fetch(`http://localhost:3000/api/ticket/getTicketType/${eventId}`)
+      .then(response => response.json())
+      .then(result => {
+        const ticketTypes = result.data;
+        const ticketTypeSelector = document.getElementById('ticketType');
+
+        ticketTypes.forEach(ticketType => {
+          const option = document.createElement('option');
+          option.value = ticketType.id;
+          option.textContent = `${ticketType.type_name} - ₦${ticketType.price}`;
+          ticketTypeSelector.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching ticket types:', error);
+      });
+
+  } catch (err) {
+    console.error('Error fetching event details:', err);
+    alert('An error occurred while loading the event.');
+  }
+});
+
+// Show/Hide Friend Email
+const buyForFriendCheckbox = document.getElementById('buyForFriend');
+const friendEmailContainer = document.getElementById('friendEmailContainer');
+
+buyForFriendCheckbox.addEventListener('change', () => {
+  if (buyForFriendCheckbox.checked) {
+    friendEmailContainer.classList.remove('hidden');
+  } else {
+    friendEmailContainer.classList.add('hidden');
+  }
+});
+
+document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const eventId = document.getElementById('eventId').value;
+  const ticketTypeId = document.getElementById('ticketType').value;
+  const buyingForFriend = buyForFriendCheckbox.checked;
+  const friendEmail = document.getElementById('friendEmail').value;
+  const quantity = parseInt(document.getElementById('quantity').value, 10);
+  const token = sessionStorage.getItem('token');
+  let userId = null;
+
+  if (token) {
+    try {
+      const decodedToken = jwt_decode(token);
+      userId = decodedToken.user_id || decodedToken.id || null;
+    } catch (err) {
+      console.error('Error decoding token:', err);
+    }
+  }
+  
+if (!quantity || quantity < 1) {
+  alert('Please enter a valid quantity.');
+  return;
+}
+
+  if (!email || !eventId || !userId || !ticketTypeId) {
+    alert('Please fill all fields and ensure you are logged in.');
+    window.location.href = "../index.html";
+    return;
+  }
+
+  try {
+    let payload = {
+      email,
+      event_id: eventId,
+      user_id: userId,
+      ticket_type_id: ticketTypeId,
+      quantity
+    };
+
+    let endpoint = 'http://localhost:3000/api/payment/initialize';
+
+    if (buyingForFriend) {
+      if (!friendEmail) {
+        alert('Please enter your friend\'s email.');
+        return;
+      }
+      payload.friend_email = friendEmail;
+      endpoint = 'http://localhost:3000/api/payment/initialize';
+    }
+
+    const paymentRes = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const paymentData = await paymentRes.json();
+    console.log('Payment API response:', paymentData);
+
+    if (paymentData.status && paymentData.data && paymentData.data.authorization_url) {
+      window.location.href = paymentData.data.authorization_url;
+    } else {
+      alert('Failed to initialize payment. Please try again.');
+    }
+
+  } catch (err) {
+    console.error('Error initializing payment:', err);
+    alert('Something went wrong while initializing payment.');
+  }
+});
+</script>
+</body>
+</html>

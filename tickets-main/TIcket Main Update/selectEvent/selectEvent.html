@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details</title>
+</head>
+<body>
+    <div id="event_details"></div>
+</body>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('id');
+
+    fetch(`http://localhost:3000/api/event/${eventId}`)
+    .then(res => {
+        if (!res.ok) throw new Error('Event not found');
+        return res.json();
+    })
+    .then(data => {
+        console.log('Full Event Data:', data);
+
+        if (!data || !data.id) {  // Fix: check for id instead of data.event
+            throw new Error('Invalid event data');
+        }
+
+        // Since the data is the event directly, no need for .event
+        const event = data;
+        console.log("Event details:", event);
+
+        document.getElementById('event_details').innerHTML = `
+            <h2>${event.name}</h2>
+            <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+            <p>${event.description}</p>
+            <button onclick="window.location.href='../payment/payment.html?id=${eventId}'">Pay Now</button>
+        `;
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        document.getElementById('event_details').innerHTML = 'Event not found';
+    });
+</script>
+</html>

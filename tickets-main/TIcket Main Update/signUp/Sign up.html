@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible"
+    content="IE-edge">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+    <title>Create an account </title>
+    <link rel="icon" href="">
+    <link rel="stylesheet" href="Sign up styles.css">
+ 
+</head>
+<body>
+    <section class="form-container">
+        <div class="signbox">
+            <div class="logo"></div>
+    <h1>Sign Up</h1>
+    <p>It's free and only takes a minute</p>
+        <form id="signUp">
+            <div id="signUpMessage" class="messageDiv" style="display: none;"></div>
+            <input type="text" id="Name" Placeholder="Full Name"required>
+            
+            
+            <input type="email" id="email" placeholder="Email Address" required>
+            
+            <input type="password" id="password" Placeholder="Password" required>
+           
+            <select id="roleSelector" required>
+                <option value="admin">Admin</option>
+                <option value="user">User</option> <!-- Fix: Ensure "role" has a correct value -->
+            </select>
+            
+            <button type="submit" id="submit">Sign Up</button>
+            <p id="message"></p>
+        <p>Already have an account? <a href="../login/Login.html">Login here</a></p>
+        </form>
+    
+</iframe>
+    </div>
+    </section>
+    <script>
+        document.getElementById('signUp').addEventListener('submit', async function(e){
+            e.preventDefault();
+            const name = document.getElementById('Name').value;
+            const email= document.getElementById('email').value;
+            const password= document.getElementById('password').value;
+            const selector = document.getElementById('roleSelector').value;
+
+try {
+    const res = await fetch('http://localhost:3000/api/auth/signUp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role: selector })
+    });
+
+    const data = await res.json();
+
+
+    if (data.message === "Email is already in use") {
+        window.location.href = '../signUp/Sign up.html';
+        return
+    } 
+
+    alert(data.message);
+     if (data.role === 'admin') {
+        window.location.href = '/profile/admin.html';
+    } else {
+        window.location.href = '../user_profile/user.html';
+    }
+} catch (error) {
+    alert('An error occurred during sign-up. Please try again.');
+    console.error(error);
+}
+
+        })
+    </script>
+   
+</body>
+</html>

@@ -38,10 +38,10 @@
     const token = sessionStorage.getItem('token');
     const params = new URLSearchParams(window.location.search);
     const adminId = params.get('userId');
-  
+    console.log("Extracted adminId:", adminId);
     if (!token) {
       alert('You need to log in first!');
-      window.location.href = '/login.html';
+      window.location.href = '../login/login.html';
     }
   
     const getEventIdFromAdmin = async () => {
@@ -55,7 +55,7 @@
         if (!response.ok) throw new Error("Failed to fetch event ID");
   
         const data = await response.json();
-        console.log(data)
+        console.log(data); 
         return data.event_id;
       } catch (error) {
         console.error("Error fetching event ID:", error);
@@ -65,7 +65,7 @@
   
     const fetchEventStats = async (eventId) => {
       try {
-        const response = await fetch(`http://localhost:3000/api/dashboard/${eventId}`, {
+        const response = await fetch(`http://localhost:3000/api/dashboard/dashboardStats/${eventId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
@@ -81,7 +81,7 @@
         const standard = data.ticketTypes.find(t => t.type_name === 'Standard');
         if (standard) {
           document.getElementById('standardTicket').textContent = `${standard.type_name}: ${standard.available_tickets} available`;
-        } else {
+        } else {  
           document.getElementById('standardTicket').textContent = `Standard ticket not found`;
         }
   
@@ -99,14 +99,17 @@
     };
   
     const init = async () => {
-      const eventId = await getEventIdFromAdmin();
-      
-      if (eventId) {
-        await fetchEventStats(eventId);
-      } else {
-        alert("No event ID found for this admin.");
-      }
-    };
+  const eventId = await getEventIdFromAdmin();
+  console.log("Received Event ID:", eventId);  // Add this
+
+  if (eventId) {
+    await fetchEventStats(eventId);
+  } else {
+    alert("No event ID found for this admin.");
+  }
+};
+
+    
   
     window.onload = init;
   </script>

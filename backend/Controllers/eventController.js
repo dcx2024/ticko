@@ -3,11 +3,12 @@ const {createEvent,getAllEvents,getEventById} = require('../models/eventModel')
 
 const createEventHandler = async (req, res) => {
     try {
-        const admin_id = req.user.id; // assumes authentication middleware sets req.user
+        const admin_id = req.user.id;  // assumes authentication middleware sets req.user
+        const admin_email=req.user.email
         const { name, description, date, location, start_time, end_time, status } = req.body;
         const image = req.file ? req.file.path : null;
 
-        const event = await createEvent(admin_id, name, description, date, image, location, start_time, end_time, status);
+        const event = await createEvent(admin_id, name, description, date, image, location, start_time, end_time, status, admin_email);
         res.status(201).json({ id: event.id, message: "Event created" });
         console.log(event);
     } catch (error) {

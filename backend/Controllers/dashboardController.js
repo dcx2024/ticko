@@ -11,16 +11,17 @@ const getEventFromOwnerHandler = async (req, res) => {
     try {
         // Fetch the event ID associated with the admin
         const getEventId = await getEventFromOwner(admin_id);
-
+        const event = getEventId;
+        console.log(event)
         // If no event is found, return a 404 error
-        if (!getEventId) {
+        if (!getEventId || getEventId.length === 0) {
             return res.status(404).json({ error: 'Event not found for this admin.' });
         }
 
         // Return the event ID (or the entire event details if needed)
         res.status(200).json({
             message: "Event successfully retrieved",
-            event_id: getEventId.id // Assuming getEventId returns an object with 'id'
+            event_id: event 
         });
     } catch (error) {
         console.error(error);

@@ -24,13 +24,20 @@ const getStandardTicket = async (event_id, type_name) => {
     return result.rows[0];
 };
 
-const getEventFromOwner = async (admin_id, event_id) => {
+const getEventFromOwner = async (admin_id) => {
     const result = await db.query(
         'SELECT id FROM events WHERE admin_id = $1',
         [admin_id]
     );
-    return result.rows;
+
+    // Check if the event exists
+    if (result.rows.length > 0) {
+        return result.rows[0].id; // Return the event ID
+    } else {
+        return null; // Return null if no event is found
+    }
 };
+
 const getTicketTypeBreakdown = async (event_id) => {
     const result = await db.query(`
         SELECT 

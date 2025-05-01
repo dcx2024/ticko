@@ -49,7 +49,7 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
 
     try {
         const [eventResult, userNameResult, userEmailResult, typeResult] = await Promise.all([
-            db.query('SELECT name FROM events WHERE id = $1', [event_id]),
+            db.query('SELECT name,admin_email FROM events WHERE id = $1', [event_id]),
             db.query('SELECT name FROM users WHERE id = $1', [user_id]),
             db.query('SELECT email FROM users WHERE id = $1', [user_id]),
             db.query('SELECT type_name, price, available_tickets FROM ticket_types WHERE id = $1', [ticket_type_id]),
@@ -63,6 +63,7 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
         const event_name = eventResult.rows[0].name;
         const userName = userNameResult.rows[0].name;
         const email = userEmailResult.rows[0].email;
+        const admin_email = eventResult.rows[0].admin_email
         const { type_name: typeName, price, available_tickets: availableTicketsRaw } = typeResult.rows[0];
         let availableTickets = availableTicketsRaw;
 
@@ -119,7 +120,7 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
             await emailQueue.add({
                 AdminMailOptions: {
                     from: process.env.GMAIL_USER,
-                    to: 'admin@example.com',
+                    to: admin_email,
                     subject: 'Tickets Sold Out',
                     html: `<p>Tickets for event ID ${event_id} are sold out.</p>`
                 }
@@ -141,7 +142,7 @@ const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_
             await emailQueue.add({
                 AdminMailOptions: {
                     from: process.env.GMAIL_USER,
-                    to: 'admin@example.com',
+                    to: admin_email,
                     subject: 'Tickets Sold Out',
                     html: `<p>Tickets for event ID ${event_id} are sold out.</p>`
                 }

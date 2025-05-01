@@ -2,11 +2,11 @@ const db = require('../config/db');
 const { getOrSetCache, invalidateCache } = require('../utils/cache');
 
 // Create Event
-const createEvent = async (name, description, date, image, location, start_time, end_time, status,admin_id) => {
+const createEvent = async (name, description, date, image, location, start_time, end_time, status,admin_id,admin_email) => {
     const result = await db.query(
-        `INSERT INTO events (admin_id, name, description, date, image, location, start_time, end_time, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-        [ name, description, date, image, location, start_time, end_time, status,admin_id]
+        `INSERT INTO events (admin_id, name, description, date, image, location, start_time, end_time, status,admin_email)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+        [ name, description, date, image, location, start_time, end_time, status,admin_id,admin_email]
     );
 
     // Invalidate events list cache

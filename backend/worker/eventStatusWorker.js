@@ -16,7 +16,7 @@ const startEventStatusWorker=()=>{
 
             const deleteResult = await db.query(`
                 DELETE FROM events
-                WHERE (status ='completed' OR status 'cancelled')
+                WHERE (status ='completed' OR status = 'cancelled')
                 AND end_time < NOW() - INTERVAL '7 days'
             `)
             console.log(`🗑️ Deleted ${deleteResult.rowCount} old completed/cancelled event(s).`)

@@ -63,7 +63,8 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
         const event_name = eventResult.rows[0].name;
         const userName = userNameResult.rows[0].name;
         const email = userEmailResult.rows[0].email;
-        const admin_email = eventResult.rows[0].admin_email
+        const admin_email = eventResult.rows[0].admin_email;
+        console.log(admin_email)
         const { type_name: typeName, price, available_tickets: availableTicketsRaw } = typeResult.rows[0];
         let availableTickets = availableTicketsRaw;
 

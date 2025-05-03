@@ -19,7 +19,7 @@
                 events.forEach(event => {
                     const li =document.createElement('li')
                     li.innerHTML = `<a href="../selectEvent/selectEvent.html?id=${event.id}"><strong>${event.name}</strong><br>
-                <img src='${event.image}'>
+                <img src="http://localhost:3000${event.image}" alt="Event Image" width="200" />
                 ${new Date(event.date).toLocaleDateString()} @${event.location}</a>
                 <button window></button>`
 list.appendChild(li)

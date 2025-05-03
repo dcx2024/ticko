@@ -14,7 +14,7 @@ const app = express()
 startEventStatusWorker();
 startEmailWorker();
 app.use(express.json())
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname,'fileUpload', 'Uploads')));
 app.use(cors())
 
 app.use('/api/auth', authRoutes)

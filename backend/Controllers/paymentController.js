@@ -22,15 +22,17 @@
         return res.status(404).json({ error: 'Ticket type not found for this event' });
       }
 
-      let baseAmount = parseInt(ticketQuery.rows[0].price) * 100; // Paystack expects the amount in kobo
+      let baseAmount = parseInt(ticketQuery.rows[0].price)* quantity * 100; // Paystack expects the amount in kobo
       let paystackFee = Math.floor((0.015 * baseAmount) + 30000); // Paystack fee of 1.5% + a fixed fee of 300 NGN
-      let amount = baseAmount * quantity + paystackFee;
+      let amount = baseAmount  + paystackFee;
 
       const params = JSON.stringify({
         email: email,
         amount: amount, // Paystack expects the amount in kobo
         metadata: { event_id, user_id, ticket_type_id, quantity, ...(friend_email && { friend_email }) },
         callback_url: 'http://localhost:3000/api/payment/verify/',
+        transaction_charge : baseAmount,
+        //subaccount:
       });
 
       const options = {
@@ -88,6 +90,60 @@
     }
   };
 
+  const createSubAccount = async(req,res)=>{
+    const {businessName, account_number,bank,event_id}=req.body
+
+if(!businessName || !account_number || !bank|| !event_id){
+  return res.status(400).json({error:"Missing Fields Required"})
+}
+
+try{
+  const businessDetails = await db.query('SELECT event_name,account_number,bank FROM events WHERE id=$1',[event_id])
+
+  if(businessDetails.rows.length===0){
+    return res.status(404).json({ error: 'Business details not found for this event' });
+  }
+
+    const params = JSON.stringify({
+      "business_name": businessName,
+      "bank": bank,
+      "account_number": account_number,
+      
+    })
+    
+    const options = {
+      hostname: 'api.paystack.co',
+      port: 443,
+      path: '/subaccount',
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`,
+        'Content-Type': 'application/json'
+      }
+    }
+    
+    const subReq = https.request(options, res => {
+      let data = ''
+    
+      res.on('data', (chunk) => {
+        data += chunk
+      });
+    
+      res.on('end', () => {
+        console.log(JSON.parse(data))
+      })
+    }).on('error', error => {
+      console.error(error)
+    })
+    
+    subReq.write(params)
+    subReq.end()
+  
+} catch (error) {
+  console.error('Error during subaccount setup:', error);
+  res.status(500).json({ error: 'Server error during subaccount setup' });
+}
+  }
   const verifyPayment = async (req, res) => {
     console.log('⚡ Verify route hit!');
 
@@ -175,5 +231,8 @@
 
     verifyReq.end();
   };
+
+
+  
 
   module.exports = { initializePayment, verifyPayment };

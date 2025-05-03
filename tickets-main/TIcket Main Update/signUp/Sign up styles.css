@@ -78,3 +78,21 @@ button {
     opacity:0;
     animation: fadeOut 7s forwards; 
   }
+
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-wrapper input {
+    padding-right: 40px; /* Space for the icon */
+  }
+  
+  .password-wrapper i {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #555;
+  }
+  

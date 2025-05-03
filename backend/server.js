@@ -1,6 +1,8 @@
 const express= require('express')
 const cors = require('cors')
 const path = require('path')
+const startEventStatusWorker = require('./worker/eventStatusWorker')
+const startEmailWorker = require('./email-worker/emailWorker')
 const authRoutes = require('./routes/signUp')
 const eventRoutes = require('./routes/eventRoute')
 const userResetRoutes = require('./routes/passwordRoute')
@@ -9,6 +11,8 @@ const dashboardRoute= require('./routes/dashboardRoute')
 const userProfileRoute = require('./routes/userProfileRoute')
 const ticketTypesRoute = require('./routes/ticketTypesRoute')
 const app = express()
+startEventStatusWorker();
+startEmailWorker();
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors())

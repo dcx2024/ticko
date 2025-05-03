@@ -1,7 +1,8 @@
 const emailQueue = require('../email-worker/queue');
 const {sendMail,adminSendMail} = require('../email-worker/sendEmail');
 
-emailQueue.process(async (job) => {
+const startEmailWorker = () => {
+  emailQueue.process(async (job) => {
     const { mailOptions, AdminMailOptions } = job.data;
   
     try {
@@ -17,4 +18,9 @@ emailQueue.process(async (job) => {
       console.error(`❌ Failed to send email: ${error.message}`);
     }
   });
-  
+
+  console.log('📬 Email worker started.');
+};
+
+module.exports = startEmailWorker;
+

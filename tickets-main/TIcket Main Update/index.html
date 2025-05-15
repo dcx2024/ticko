@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="landingpage.css">
     <title>Document</title>
 </head>
 <body>
     <header>
-        <img src="/images/1744162770374.jpg" alt="">
+        <img src="/images/logo-wihtout bg.png" alt="Ticko Logo">
         <div class="nav">
             
         <nav>
             <a href="./events/event.html">Events</a>
-            <a href="">Vemues</a>
-            <a href="">Artists</a>
-            <a href="">Deals</a>
+            <a href="">How ticko Works</a>
+            <a href="">Pricing</a>
+            <a href="">About</a>
         </nav>
         <div class="acctBtn">
         <button><a href="/tickets-main/TIcket Main Update/signUp/Sign up.html">Sign In</a></button>
@@ -24,57 +27,58 @@
     </div>
     </header>
     <section class="hero-section">
-        <h1>Discover and book<br>
-            amazing live<br>
-            experiences
+        <div class="overlay"></div>
+        <h1>Where the vibes are,
+            You are  
         </h1>
-        <p>FInd tickets for concerts,sports,theater and more in your area</p>
-
-        <button window.location.href='./events/event.html'>View Events</button>
-        <button window.location.href='./'><a href="./createEvent/create_event page.html">CreateEvent</a></button>
+        <br>
+        <p>From concerts and festivals to pop-ups and parties — discover events that match your energy.
+             Grab your crew, make some noise, and create memories you’ll never forget.
+              Your next big moment starts here.</p>
+<br>
+        <button window.location.href='./events/event.html'>Discover Events</button>
+        
     </section>
-    <section class="featured-events">
-        <div class="feature-top">
-            <h2>featured-events</h2>
-        <a>View all</a> 
+    <section class="create-events">
+        <div class="create-events-text">
+            <h2>Your event,
+                your rules.
+                Let’s make it go viral.</h2>
+        <button><a href="./createEvent/create_event page.html">Create an Event</a> </button>
     </div>
-        <!--get the most popular events-->
-        <!--with the flyer,event name,date,location and base ticket price-->
-        <div></div>
-        <ul id="featured-events-list">
-
-        </ul>
-        <button>Get tickets</button>
-        <button>Learn More</button>
+    <img src="/images/create-event-section.jpg">
     </section>
-    <Section class="popular-events">
-        <div class="popular-top">
-            <h2>Popular-events</h2>  
-        <a>View all</a>
+    <Section class="learn-more">
         <div>
-            <div class="items"><!--Would dynamically be givwn the infor from the server--></div>
-            <div class="items"></div>
-            <div class="items"></div>
-            <div class="items"></div>
-        </div>
-    </div>
-        <!--Get the events with the nost tickets sold within the month-->
+    <h2>Tickets? Too soft. It’s giving
+         straight-up energy ✨</h2>
+         <br>
+         <p>Fans love it. Organizers swear by it. Ticko makes buying and selling tickets smoother than your
+             For You Page — no stress, no mess, just ✨ pure vibes</p>
+<br>
+             <button>Learn More</button>
+            </div>
     </Section>
-    <section class="neverMiss">
-        <div>
-        <h2>Never miss an event
-            <br> again</h2>
-            <p>Subscribe to us on all our platforms and be the first to know about the biggest and baddest events
+   <section class="pricing">
+    <h1>Pricing</h1>
+  <h3>Keeping it 💯 — Our fees are super simple:</h3>
 
-            </p>
-            <input type="email">
-            <button>Subscribe</button>
-        </div>
-        <img src="" alt="">
-    </section>
+  <div class="cards">
+    <div class="card freeEvents">
+      <h4>🎉 Free Events</h4>
+      <p>$0 fees. Yup, literally nothing. You host, they show up — no strings, no stress.</p>
+    </div>
+
+    <div class="card paidEvents">
+      <h4>💵 Paid Events</h4>
+      <p>Only 4% per ticket. That’s it. No sneaky charges, no “convenience” fees — just straight-up transparency.</p>
+    </div>
+  </div>
+
+   </section>
 <footer>
     <div>
-        <!--logo-->
+       <img src="/images/logo-wihtout bg.png">
         <p>The modern way to discover and  book ticktes for the events</p>
     </div>
 
@@ -119,5 +123,25 @@ list.appendChild(li)
         })
     })
 </script>
+
+<nav class="mobile-bottom-nav">
+  <a href="./events/event.html">
+    <img src="/icons/events-icon.svg" alt="Events">
+    <span>Events</span>
+  </a>
+  <a href="#">
+    <img src="/icons/how-icon.svg" alt="How it works">
+    <span>How It Works</span>
+  </a>
+  <a href="#">
+    <img src="/icons/pricing-icon.svg" alt="Pricing">
+    <span>Pricing</span>
+  </a>
+  <a href="#">
+    <img src="/icons/account-icon.svg" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
 </body>
 </html>

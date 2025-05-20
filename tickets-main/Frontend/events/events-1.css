@@ -1,0 +1,608 @@
+body{
+    margin: 0px;
+    
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    padding: 0px 76px 5px 75px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+button{
+    background-color: #386ca1;
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    padding: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+button:hover{
+    background-color: #022547;
+    color: white;
+    transition: 0.35s ease-in;
+}
+.nav {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+  }
+  nav {
+    display: flex;
+    gap: 15px;
+  }
+  nav a {
+    color: #4A90E2;
+    font-weight: 500;
+  }
+  /* Logo */
+  header img {
+    width: 80px;
+  }
+  /* Buttons */
+  .acctBtn {
+    display: flex;
+    gap: 10px;
+  }
+  .acctBtn button {
+    background-color: #4A90E2;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .acctBtn a {
+    color: white;
+  }
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    z-index: 999;
+  }
+  .mobile-bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #4A90E2;
+    text-decoration: none;
+  }
+  .mobile-bottom-nav a img {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 3px;
+  }
+p{
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+    padding: 0;
+    margin: 8px;
+}
+section{
+        padding-left: 50px;
+        padding-right: 50px;
+        margin-top: 100px;
+        margin-bottom: 100px;
+    
+}
+h1{
+    font-size: 50px;
+    text-align: left;
+    margin: 0px;
+
+}
+#logo_container{
+    display: inline;
+}
+#TickoLogo{
+    width: 80px;
+    height: 80px;
+}
+#LinkContainer{
+    display: inline;
+    float: right;
+    margin-top: 20px;
+}
+
+#sec1{
+    display: flex;
+    align-content: space-evenly;
+    padding: 50px;
+    margin-top: 28px;
+    height: 350px;
+    background-color: #6087ad;
+
+}
+#writeup1left{
+    width: 50%;
+    height: fit-content;
+
+}
+.ExtraInfo{
+    font-size: 17px;
+    font-weight: 200;
+    font-family: sans-serif;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+#SearchContainer{
+    
+    width: 60%;
+    border: 1px solid white;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+   
+}
+#UpSearch{
+     width: 100%;
+     align-content: space-evenly;
+}
+.btn1{
+    width: 100px;
+    height: 30px;
+    border-radius: 5px;
+
+}
+
+#DownSearch{
+    margin-top: 0px;
+    padding: 0px;
+    display: flex;
+    width: fit-content;
+    align-content: space-evenly;
+}
+.SearchCategory{
+    width: 21%;
+    padding: 5px;
+}
+#writeup1right{
+    width: 50%;
+    height: fit-content;
+}
+#imgRight1{
+    width: 500px;
+    height: 300px;
+    float: right;
+    border: 0px;
+    border-radius: 10px;
+}
+h2{
+    display: inline;
+    color: #386ca1;
+    padding-top: 20px;
+}
+#AllFeatured{
+    float: right;
+    padding: 0px;
+}
+#FeaturedCategory{
+    background-color: #1a4977;
+    color: white;
+    font-weight: bold;
+    border-radius: 2px;
+    width: fit-content; 
+}
+#FeaturedEvent{
+    position: relative;
+    margin-top: 10px;
+    width: 100%;
+    height: 500px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    z-index: 0;
+    box-shadow: 4px 0px 4px 0px grey;
+}
+
+#FtEvntCntner{
+    position: absolute;
+    bottom: 40px;
+    left: 30px;
+}
+h3{
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px;
+}
+
+#BuyTicks{
+    background-color: #00162c;
+    color: white;
+    border: 0px ;
+}
+.FtBtn{
+    background-color: white;
+    color: #386ca1;
+    width: 100px;
+}
+
+#AllPopular{
+    float: right;
+    padding: 0px;
+}
+#PopularCntner{
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-evenly;
+}
+.PopularCategory{
+    text-align: center;
+    width: 250px;
+    height: 200px;
+    border: 2px solid #00FFFF;
+    border-radius: 7px;
+    box-shadow: 4px 0px 4px 0px grey;
+}
+.icon{
+    margin-top: 50px;
+    width: 30%;
+    height: 30%;
+}
+#AllTrending{
+    float: right;
+    padding: 0px;
+    
+}
+#Trending{
+    display: flex;
+    justify-content: space-between;
+}
+.TrendingCategory{
+    width: 23%;
+    height: 320px;
+    position: relative;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: 2px solid #00FFFF;
+    box-shadow: 4px 0px 4px 0px grey;
+    
+}
+.TrendingCategoryInner{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 39%;
+    padding: 5px;
+    border-top: 1px solid rgb(218, 213, 213);
+
+    
+}
+.EventName{
+    font-size: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    
+}
+.TrendingKnowMore{
+    color: #000f1f;
+    margin: 0px;
+    font-weight: bold;
+}
+
+#sec5{
+    display: flex;
+    align-content: space-between;
+    padding: 50px;
+    margin-top: 30px;
+    height: 350px;
+    background-color: #f4faff;
+    
+
+}
+#writeup2left{
+    width: 36%;
+    height: fit-content;
+
+}
+#writeup2right{
+    width: 65%;
+    height: fit-content;
+}
+#imgRight2{
+    width: 500px;
+    height: 300px;
+    float: right;
+    border: 0px;
+    border-radius: 10px;
+}
+#UserEmail{
+    height: 30px;
+    width: 70%;
+    border-radius: 4px;
+    border: 1px;
+}
+#UserEmail:placeholder-shown{
+    font-weight: bold;
+    text-align: center;
+}
+
+footer{
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #f6fbff;
+    height: 350px;
+    padding: 0px;
+}
+#FootObj{
+    width: 25%;
+}
+#FooterLogo{
+    width: 400px;
+    height: 400px;
+}
+
+h4{
+    font-size: 25px;
+    color: black;
+    margin-top: 100px;
+}
+.link{
+    font-size: 18px;
+    color: black;
+    padding: 20px;
+    margin-top: 10px;
+}
+.HamburgerIcon{
+    display: none;
+}
+
+/* ____________________________________________________________________________________________________________________________ */
+
+
+
+
+
+
+
+
+
+@media (max-width:768px){
+    
+
+    header #LinkContainer{
+        display: none;
+    }
+    /* header a .HamburgerIcon{
+        display: block;
+        
+    }
+    header a{
+        color: white;
+        padding: 14px;
+        text-decoration: none;
+        font-size: 17px;
+        display: block;
+    } */
+    
+
+
+body{
+    padding: 0px;
+    margin: 0px;
+   
+}
+
+  .mobile-bottom-nav {
+    display: flex;
+  }
+   .nav {
+  display: none;
+}
+nav {
+  display: none;
+
+}
+header img{
+position: absolute;
+top: 0;
+left: 15px
+}
+  header {
+    background-color: transparent;
+    box-shadow: none; /* Prevent overlap */
+  }
+a{
+    text-decoration: none;
+    color: #1a4977;
+    padding: 0px;
+    font-size: 18px;
+}
+a:hover{
+    padding: 18px;
+    font-size: 20px;
+    transition: 0.35s ease-in-out;
+}
+section{
+        width: 100%;
+        padding: 30px;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    
+}
+#sec1{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: fit-content;
+}
+h1{
+    font-size: 30px;
+    text-align: center;
+}
+#writeup1left{
+    width: 100%;
+    text-align: center;
+}
+#SearchContainer{
+    width: 100%;
+    display: none;
+}
+#writeup1right{
+    width: 100%;
+}
+#imgRight1{
+    
+        width: 100%;
+        height: fit-content;
+        border-radius: 10px;
+        display: block;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        
+}
+#FeaturedEvent{
+    position: relative;
+    margin-top: 10px;
+    width: 100%;
+    height: 300px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    z-index: 0;
+    box-shadow: 4px 0px 4px 0px grey;
+}
+#FtEvntCntner{
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    font-size: 10px;
+    
+}
+h3{
+    font-size: 20px;
+    padding: 0px;
+    margin: 0px;
+}
+#PopularCntner{
+    flex-direction: row;
+    margin-bottom: 10px;
+    
+   
+}
+.PopularCategory{
+    text-align: center;
+    width: 20%;
+    height: 20%;
+    border: 2px solid #00FFFF;
+    border-radius: 7px;
+    box-shadow: 4px 0px 4px 0px grey;
+}
+.icon{
+    margin-top: 20px;
+    width: 30%;
+    height: 30%;
+}
+#Trending{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.TrendingCategory{
+    width: 100%;
+    height: 300px;
+    position: relative;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: flex;
+    margin: 10px auto;
+    justify-self: center;
+    border: 2px solid #00FFFF;
+    box-shadow: 4px 0px 4px 0px grey;
+    font-size: 13px;
+}
+.TrendingCategoryInner{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: fit-content;
+    padding: 8px;
+    border-top: 1px solid rgb(218, 213, 213);
+
+    
+}
+#sec5{
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+    height: fit-content;
+   
+    text-align: center;
+    
+
+}
+#writeup2left{
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 30px;
+
+}
+#writeup2right{
+    width: 100%;
+    height: fit-content;
+}
+#imgRight2{
+    width: 100%;
+    height: fit-content;
+   
+    border-radius: 10px;
+}
+footer{
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    text-align: center;
+    
+    width: 100%;
+    justify-self: center;
+}
+#FootObj{
+    display: inline;
+    width: 20%;
+    height: min-content;
+    padding: 0px;
+    margin: 0px;
+    
+}
+#FooterLogo{
+    width: 200px;
+    height: fit-content;
+    flex-grow: 2;
+    
+}
+.link{
+    font-size: 11px;
+    color: #1a4977;
+    padding: 0px;
+    margin-top: 10px;
+    
+}
+h4{
+    font-size: 20px;
+    color: #0e2842;
+    margin-top: 0px;
+}
+}

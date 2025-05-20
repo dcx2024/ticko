@@ -3,7 +3,99 @@
   require('dotenv').config();
   const https = require('https');
 
-  const initializePayment = async (req, res) => {
+ 
+
+ const createSubAccount = async (req, res) => {
+  const { businessName, account_number, bank, event_id } = req.body;
+
+  if (!businessName || !account_number || !bank || !event_id) {
+    return res.status(400).json({ error: "Missing Fields Required" });
+  }
+
+  try {
+    const eventCheck = await db.query(
+      'SELECT id FROM events WHERE id = $1',
+      [event_id]
+    );
+
+    if (eventCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const params = JSON.stringify({
+      business_name: businessName,
+      bank: bank,
+      account_number: account_number,
+      percentage_charge: 96,
+    });
+
+    const options = {
+      hostname: 'api.paystack.co',
+      port: 443,
+      path: '/subaccount',
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const paystackReq = https.request(options, (paystackRes) => {
+      let data = '';
+
+      paystackRes.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      paystackRes.on('end', async () => {
+        try {
+          const result = JSON.parse(data);
+
+          if (result.status) {
+            const subaccountCode = result.data.subaccount_code;
+
+            // ✅ Save everything to the event record
+            await db.query(
+              `UPDATE events
+               SET business_name = $1,
+                   business_account_number = $2,
+                   business_bank = $3,
+                   subaccount_code = $4
+               WHERE id = $5`,
+              [businessName, account_number, bank, subaccountCode, event_id]
+            );
+
+            return res.status(200).json({
+              message: 'Subaccount created and saved',
+              data: result.data,
+            });
+          } else {
+            return res.status(400).json({ error: result.message || 'Failed to create subaccount' });
+          }
+        } catch (parseErr) {
+          console.error('Parse error:', parseErr);
+          return res.status(500).json({ error: 'Error parsing Paystack response' });
+        }
+      });
+    });
+
+    paystackReq.on('error', (error) => {
+      console.error('Paystack request error:', error);
+      return res.status(500).json({ error: 'Failed to connect to Paystack' });
+    });
+
+    paystackReq.write(params);
+    paystackReq.end();
+
+  } catch (error) {
+    console.error('Error during subaccount setup:', error);
+    return res.status(500).json({ error: 'Server error during subaccount setup' });
+  }
+};
+
+
+
+ const initializePayment = async (req, res) => {
     const { email, event_id, user_id, ticket_type_id, friend_email, quantity } = req.body;
 
     // Validate required fields
@@ -90,60 +182,7 @@
     }
   };
 
-  const createSubAccount = async(req,res)=>{
-    const {businessName, account_number,bank,event_id}=req.body
 
-if(!businessName || !account_number || !bank|| !event_id){
-  return res.status(400).json({error:"Missing Fields Required"})
-}
-
-try{
-  const businessDetails = await db.query('SELECT event_name,account_number,bank FROM events WHERE id=$1',[event_id])
-
-  if(businessDetails.rows.length===0){
-    return res.status(404).json({ error: 'Business details not found for this event' });
-  }
-
-    const params = JSON.stringify({
-      "business_name": businessName,
-      "bank": bank,
-      "account_number": account_number,
-      
-    })
-    
-    const options = {
-      hostname: 'api.paystack.co',
-      port: 443,
-      path: '/subaccount',
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`,
-        'Content-Type': 'application/json'
-      }
-    }
-    
-    const subReq = https.request(options, res => {
-      let data = ''
-    
-      res.on('data', (chunk) => {
-        data += chunk
-      });
-    
-      res.on('end', () => {
-        console.log(JSON.parse(data))
-      })
-    }).on('error', error => {
-      console.error(error)
-    })
-    
-    subReq.write(params)
-    subReq.end()
-  
-} catch (error) {
-  console.error('Error during subaccount setup:', error);
-  res.status(500).json({ error: 'Server error during subaccount setup' });
-}
-  }
   const verifyPayment = async (req, res) => {
     console.log('⚡ Verify route hit!');
 
@@ -233,6 +272,53 @@ try{
   };
 
 
-  
+ const fetchBanks = async (req, res) => {
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: '/bank',
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`
+    }
+  };
 
-  module.exports = { initializePayment, verifyPayment };
+  const request = https.request(options, (paystackRes) => {
+    let data = '';
+
+    paystackRes.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    paystackRes.on('end', () => {
+      try {
+        const result = JSON.parse(data);
+
+        if (result.status) {
+const banks = result.data.map(bank =>({
+  name: bank.name,
+  code: bank.code
+}))
+
+          return res.status(200).json(banks); // Express response
+        } else {
+          return res.status(400).json({ error: result.message || 'Failed to fetch banks' });
+        }
+      } catch (error) {
+        console.error('Error parsing response:', error);
+        return res.status(500).json({ error: 'Error parsing Paystack response' });
+      }
+    });
+  });
+
+  request.on('error', (error) => {
+    console.error('Request error:', error);
+    return res.status(500).json({ error: 'Failed to connect to Paystack' });
+  });
+
+  request.end();
+};
+
+
+  
+  module.exports = { createSubAccount,initializePayment, verifyPayment,fetchBanks};

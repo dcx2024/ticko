@@ -5,10 +5,10 @@ const createEventHandler = async (req, res) => {
     try {
         const admin_id = req.user.id;  // assumes authentication middleware sets req.user
         const admin_email=req.user.email
-        const { name, description, date, location, start_time, end_time, status } = req.body;
+        const { name, description, location, start_time, end_time, status } = req.body;
         const image = req.file ? `/Uploads/${req.file.filename}` : null;
 
-        const event = await createEvent(admin_id, name, description, date, image, location, start_time, end_time, status, admin_email);
+        const event = await createEvent(admin_id, name, description, image, location, start_time, end_time, status, admin_email);
         res.status(201).json({ id: event.id, message: "Event created" });
         console.log(event);
     } catch (error) {

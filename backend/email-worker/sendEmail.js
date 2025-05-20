@@ -18,10 +18,7 @@ const sendMail = async (mailOptions) => {
 };
 
 const adminSendMail = async(adminMailOptions)=>{
-  mailOptions.attachments = mailOptions.attachments.map(att => ({
-    ...att,
-    content: Buffer.from(att.content, 'base64') // Convert base64 string back to Buffer
-}));
+
     return transporter.sendMail(adminMailOptions)
 }
 

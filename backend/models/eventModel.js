@@ -2,11 +2,11 @@ const db = require('../config/db');
 const { getOrSetCache, invalidateCache } = require('../utils/cache');
 
 // Create Event
-const createEvent = async (name, description, date, image, location, start_time, end_time, status,admin_id,admin_email) => {
+const createEvent = async (name, description, image, location, start_time, end_time, status,admin_id,admin_email) => {
     const result = await db.query(
-        `INSERT INTO events (admin_id, name, description, date, image, location, start_time, end_time, status,admin_email)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-        [ name, description, date, image, location, start_time, end_time, status,admin_id,admin_email]
+        `INSERT INTO events (admin_id, name, description, image, location, start_time, end_time, status,admin_email)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+        [ name, description, image, location, start_time, end_time, status,admin_id,admin_email]
     );
 
     // Invalidate events list cache
@@ -18,7 +18,7 @@ const createEvent = async (name, description, date, image, location, start_time,
 // Get All Events
 const getAllEvents = async () => {
     return getOrSetCache('all_events', 3600, async () => {
-        const result = await db.query('SELECT * FROM events ORDER BY date, start_time ASC');
+        const result = await db.query('SELECT * FROM events ORDER BY start_time ASC');
         return result.rows;
     });
    

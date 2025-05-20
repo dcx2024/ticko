@@ -1,6 +1,8 @@
 const express= require('express')
 const cors = require('cors')
 const path = require('path')
+const https = require('https')
+const fs = require('fs')
 const startEventStatusWorker = require('./worker/eventStatusWorker')
 const startEmailWorker = require('./email-worker/emailWorker')
 const authRoutes = require('./routes/signUp')
@@ -11,6 +13,12 @@ const dashboardRoute= require('./routes/dashboardRoute')
 const userProfileRoute = require('./routes/userProfileRoute')
 const ticketTypesRoute = require('./routes/ticketTypesRoute')
 const app = express()
+
+const options = {
+    key: fs.readFileSync(path.join(__dirname, 'cert.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert.crt'))
+  };
+  
 startEventStatusWorker();
 startEmailWorker();
 app.use(express.json())
@@ -25,4 +33,9 @@ app.use('/api',dashboardRoute)
 app.use('/api/userProfile',userProfileRoute)
 app.use('/api', ticketTypesRoute)
 
-app.listen(3000, ()=>console.log("Server is lisyening on port 3000"))
+
+/*https.createServer(options,app).listen(3000,()=>{
+    console.log("Server is listening on port 3000")
+})*/
+
+app.listen(3000, ()=> console.log("Server is listening on port 3000"))

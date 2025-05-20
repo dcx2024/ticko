@@ -3,52 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/tickets-main/TIcket Main Update/create_event_form/Create_event_form1_styles.css">
+    <link rel="stylesheet" href="Create_event_form1_styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
     <title>Event Details</title>
 </head>
 <body>
+    
     <div class="tabs">
         <button id="eventTab" class="active" onclick="switchTab('event')">Event Details</button>
         <button id="ticketTab" onclick="switchTab('ticket')">Ticket Details</button>
+         <button id="accountTab" onclick="switchTab('account')">Account Details</button>
     </div>
     
     <!-- Event Form -->
-    <div id="eventForm" class=" active-tab tab-content">
+    <div id="eventForm" class="active-tab tab-content">
         <h2>Event Details</h2>
         <form id="eventDetailsForm">
-            <div>
+            <div class="input-fields">
+                <label for="eventNAme">Event Name</label>
                 <input type="text" id="event-name" placeholder="Event Name" required>
             </div>
-            <div>
-                <input type="text" id="event-description" placeholder="Description" required>
+            <div class="input-fields">
+                <label for="event-description">Description:</label>
+                <textarea id="event-description" rows="4" cols="50" placeholder="Description"></textarea>
+
             </div>
-            <div>
-                <input type="date" id="date-input" placeholder="Event Date" required>
-            </div>
-            <div>
-                <input type="file" id="event-image" placeholder="Upload Image" accept="image/*" required>
-            </div>
-            <div>
+           
+           <div class="input-fields">
+    <label for="event-image">Upload Image</label>
+    <input type="file" id="event-image" placeholder="Upload Image" accept="image/*" required>
+</div>
+
+            <div class="input-fields">
+                <label for="eventNAme">Location</label>
                 <input type="text" id="event-location" placeholder="Location" required>
             </div>
-            <div>
+            <div class="input-fields">
+                <label for="eventNAme">Event Start</label>
                 <input type="datetime-local" id="start-time" name="start_time" placeholder="Start Time">
+                <label for="eventNAme">Event end</label>
                 <input type="datetime-local" id="end-time" name="end_time" placeholder="End Time">                
             </div>
-            <div>
+            <div class="select-status">
+                <label for="eventNAme">Event Status</label>
                 <select id="event-status" required>
-                    <option value="Upcoming">Upcoming</option>
+                    <option value="Upcoming" >Upcoming</option>
                     <option value="Completed">Completed</option>
                     <option value="Cancelled">Cancelled</option>
                 </select>
             </div>
             <div>
-                <input type="hidden" id="event-id" value="some_generated_event_id_or_value" required> <!-- Hidden event ID -->
+                <input type="hidden" id="event-id" value="stuff" required> <!-- Hidden event ID -->
             </div>
             
-            <button type="submit">Submit Event Details</button>
+            <button type="submit">Submit</button>
         </form>
     </div>
 
@@ -78,6 +88,28 @@
         <a href="../events/event.html"></a>
     </div>
 
+    <div id="accountForm" class="tab-content">
+<h2>Account Details:</h2>
+<form id="accountDetailsForm">
+    <div class="input-fields">
+        <label for="businessName">Business Name:</label>
+        <input type="text" id="businessName" name="businessName" required placeholder="Business Name">
+    </div>
+    <div class="input-fields">
+        <label for="accountNumber">Account Number:</label>
+        <input type="number" id="accountNumber" name="accountNumber" required placeholder="Account Number">
+    </div>
+    <div class="input-fields">
+        <label for="bank">Bank:</label>
+        <select id="bankSelect">
+            <option value="">Select a bank</option>
+        </select>
+        <input type="text" id="bank" name="bank" required placeholder="Bank Name">
+    </div>
+    <button type="submit">Submit Account Details</button>
+</form>
+</div>
+
     <script>
         // Check if the user is an admin
         function checkIfAdmin() {
@@ -104,29 +136,40 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkIfAdmin()) {
                 // Redirect non-admin users away from the event creation page
-                window.location.href = "../index.html";  // Or any page you want to redirect to
+                window.location.href = "../index.html";  
             }
         });
+function switchTab(tab) {
+    const eventForm = document.getElementById('eventForm');
+    const ticketForm = document.getElementById('ticketForm');
+    const accountForm = document.getElementById('accountForm');
 
-        // Switch tabs between event and ticket forms
-        function switchTab(tab) {
-            const eventForm = document.getElementById('eventForm');
-            const ticketForm = document.getElementById('ticketForm');
-            const eventTab = document.getElementById('eventTab');
-            const ticketTab = document.getElementById('ticketTab');
-            
-            if (tab === 'event') {
-                eventForm.classList.add('active-tab');
-                ticketForm.classList.remove('active-tab');
-                eventTab.classList.add('active');
-                ticketTab.classList.remove('active');
-            } else {
-                ticketForm.classList.add('active-tab');
-                eventForm.classList.remove('active-tab');
-                ticketTab.classList.add('active');
-                eventTab.classList.remove('active');
-            }
-        }
+    const eventTab = document.getElementById('eventTab');
+    const ticketTab = document.getElementById('ticketTab');
+    const accountTab = document.getElementById('accountTab');
+
+    // Hide all tabs
+    eventForm.classList.remove('active-tab');
+    ticketForm.classList.remove('active-tab');
+    accountForm.classList.remove('active-tab');
+
+    eventTab.classList.remove('active');
+    ticketTab.classList.remove('active');
+    accountTab.classList.remove('active');
+
+    // Show selected tab
+    if (tab === 'event') {
+        eventForm.classList.add('active-tab');
+        eventTab.classList.add('active');
+    } else if (tab === 'ticket') {
+        ticketForm.classList.add('active-tab');
+        ticketTab.classList.add('active');
+    } else if (tab === 'account') {
+        accountForm.classList.add('active-tab');
+        accountTab.classList.add('active');
+    }
+}
+
 
         let ticketCount = 1; // Start with one ticket type form
 
@@ -140,6 +183,7 @@
             newTicketForm.id = `ticketForm${ticketCount}`;
 
             newTicketForm.innerHTML = `
+          
                 <label for="ticketType${ticketCount}">Ticket Type:</label><br>
                 <input type="text" id="ticketType${ticketCount}" name="ticketType[]" required placeholder="Ticket Type"><br><br>
 
@@ -170,17 +214,16 @@
             if (!token) return alert('Not authenticated');
 
 
-
             const formData = new FormData();
             const eventName = document.getElementById('event-name').value;
             const eventDescription = document.getElementById('event-description').value;
-            const eventDate = document.getElementById('date-input').value;
+         
             const eventImage = document.getElementById('event-image').files[0];
             const eventLocation = document.getElementById('event-location').value;
             const eventStatus = document.getElementById('event-status').value;
 const start_time=document.getElementById('start-time').value;
 const end_time=document.getElementById('end-time').value;
-            if (!eventName || !eventDescription || !eventDate || !eventImage || !eventLocation || !eventStatus) {
+            if (!eventName || !eventDescription || !eventImage || !eventLocation || !eventStatus) {
                 alert('Please complete all fields.');
                 return;
             }
@@ -194,7 +237,7 @@ const end_time=document.getElementById('end-time').value;
 
             formData.append('name', eventName);
             formData.append('description', eventDescription);
-            formData.append('date', eventDate);
+
             formData.append('image', eventImage);
             formData.append('location', eventLocation);
             formData.append('start_time', start_time);
@@ -274,9 +317,64 @@ formData.append('end_time', end_time);
             }
             alert('All tickets saved successfully!');
             // redirect to events page
-            window.location.replace("../events/event.html");
+          
 
         });
+
+        document.getElementById('accountDetailsForm').addEventListener('submit',async function(e){
+             e.preventDefault();
+
+            const businessName = document.getElementById('businessName').value;
+            const account_number= document.getElementById('accountNumber').value;
+            const bank = document.getElementById('bank').value;
+                const event_id = sessionStorage.getItem('eventId');
+
+                console.log(businessName,account_number,bank,event_id)
+            try{
+                const response = await fetch('http://localhost:3000/api/payment/createSubAcct', {
+  method: 'POST',
+  headers: { 'Content-type': 'application/json' },
+  body: JSON.stringify({
+    businessName,
+    account_number,
+    bank,
+    event_id
+  })
+                })
+
+                const result = await response.json();
+                console.log(result)
+
+            }catch(error) {
+                    console.error('Error sending accoubt data:', error);
+                    alert('Could not send Account details to server.');
+                    return;
+                }
+
+        })
+
+
+        async function loadBanks(){
+            try{
+                const res = await fetch('https://localhost:3000/api/payment/fetchBanks')
+                const data = await res.json()
+
+                if(data.status && data.banks){
+                    const select = document.getElementById('bankSelect');
+
+                    data.banks.forEach(bank => {
+                        const option = document.createElement('option')
+                        option.value = bank.code;
+                        option.textContent = bank.name;
+                        select.appendChild(option)
+                    });
+                }
+            }catch(error){
+                console.error('Failed to Load Banks:', error)
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadBanks)
     </script>
 </body>
 </html>

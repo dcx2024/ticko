@@ -1,3 +1,10 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
 .tab-content {
     display: none;
 }
@@ -23,8 +30,8 @@
 .ticket-form-group {
     margin-bottom: 15px;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+   border-bottom: 2px solid black;
+
 }
 
 .ticket-form-group input {
@@ -32,7 +39,258 @@
 }
 
 .remove-ticket-btn {
-    color: red;
+    color: white;
     cursor: pointer;
     margin-top: 5px;
+    background-color: red;
+}
+
+#eventForm {
+  background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 50%;
+  padding: 20px;
+   border: 1px solid black; /* Optional: Adds spacing inside the form */
+}
+
+#ticketForm{
+    background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 50%;
+  padding: 20px;
+  border: 1px solid black;
+}
+
+form{
+background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 50%;
+    font-family: "Montserrat", sans-serif;
+}
+
+.input-fields{
+    display: flex;
+    flex-direction: column;
+    
+    gap:8px;
+    margin-bottom: 20px;
+}
+
+input{
+    width:365px;
+    height: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.179);
+}
+
+textarea{
+        width:365px;
+   
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.179);
+
+}
+
+
+
+.select-status{
+       width:18em;
+    height: 20px;
+    padding: 10px;
+    border-radius: 5px;
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 70px;
+}
+
+#event-status{
+   width:365px;
+    height: 40px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgb(1, 1, 1);
+    margin-bottom: 10px;
+}
+label{
+    color:#4A90E2 ;
+}
+
+form button{
+      padding: 10px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4A90E2;
+  color: #121212;
+  font-weight: 600;
+  z-index: 1;
+  cursor: pointer;
+}
+
+form button:hover {
+ transform: scale(1.1);
+ transition: ease-in-out 0.5s;
+  color: white;
+}
+
+#accountForm {
+    background-color: #f8f9fa;
+    margin: 30px auto;
+    border-radius: 8px;
+    width: 50%;
+    padding: 20px;
+    border: 1px solid black;
+}
+
+#bankSelect{
+       width:365px;
+    height: 40px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgb(1, 1, 1);
+    margin-bottom: 10px;
+}
+
+@media only screen and (max-width:1300px){
+    #eventForm {
+  background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 60%;
+  padding: 20px;
+   border: 1px solid black; /* Optional: Adds spacing inside the form */
+}
+
+#ticketForm{
+    background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 60%;
+  padding: 20px;
+  border: 1px solid black;
+}
+
+form{
+background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 60%;
+    font-family: "Montserrat", sans-serif;
+}
+   #accountForm {
+        width: 60%;
+    }
+}
+
+@media only screen and (max-width:1000px){
+    #eventForm {
+  background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 60%;
+  padding: 20px;
+   border: 1px solid black; /* Optional: Adds spacing inside the form */
+}
+
+#ticketForm{
+    background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 60%;
+  padding: 20px;
+  border: 1px solid black;
+}
+
+form{
+background-color: #f8f9fa;
+  margin: 30px auto; /* Top margin and auto for horizontal centering */
+  border-radius: 8px;
+  width: 75%;
+    font-family: "Montserrat", sans-serif;
+}
+
+    #accountForm {
+        width: 60%;
+    }
+
+}
+
+@media only screen and (max-width: 850px){
+    form{
+        width:350px;
+    }
+
+     #event-status{
+        width:355px
+    }
+
+    #bankSelect{
+        width:355px
+    }
+
+      #accountForm {
+        width: 350px;
+    }   
+}
+
+@media only screen and (max-width: 710px){
+    input{
+        width:290px;
+    }
+
+    #event-description{
+        width:300px
+    }
+
+    #event-status{
+        width:294px
+    }
+    
+    form{
+        width: 300px
+    }
+
+    #accountForm {
+        width: 300px;
+    }
+}
+
+@media only screen and (max-width:570px){
+    form{
+        width: 300px
+    }
+
+    input{
+width: 280px
+    }
+
+    #eventForm{
+        width: 330px
+    }
+
+    #ticketForm{
+  width:330px
+}
+
+     #event-description{
+        width:280px
+    }
+
+    #event-status{
+   width:270px;
+    height: 40px;
+    }
+
+    #bank-select{
+          width:270px;
+    height: 40px;
+    }
+
+     #accountForm {
+        width: 330px;
+    }   
 }

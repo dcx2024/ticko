@@ -64,7 +64,7 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
         const userName = userNameResult.rows[0].name;
         const email = userEmailResult.rows[0].email;
         const admin_email = eventResult.rows[0].admin_email;
-        console.log(admin_email)
+        
         const { type_name: typeName, price, available_tickets: availableTicketsRaw } = typeResult.rows[0];
         let availableTickets = availableTicketsRaw;
 
@@ -123,7 +123,8 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
                     from: process.env.GMAIL_USER,
                     to: admin_email,
                     subject: 'Tickets Sold Out',
-                    html: `<p>Tickets for event ID ${event_id} are sold out.</p>`
+                    html: `<p>Tickets for event ${event_name} are sold out.</p>
+                    <p>Please Login to restock Tickets</p>`
                 }
             });
         }

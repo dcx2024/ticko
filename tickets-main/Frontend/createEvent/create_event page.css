@@ -1,3 +1,60 @@
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  padding: 0px 76px 5px 75px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+nav {
+  display: flex;
+  gap: 15px;
+}
+
+nav a {
+  color: #4A90E2;
+  font-weight: 500;
+}
+
+/* Logo */
+header img {
+  width: 80px;
+}
+
+/* Buttons */
+.acctBtn {
+  display: flex;
+  gap: 10px;
+}
+
+.acctBtn button {
+  background-color: #4A90E2;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.acctBtn a {
+  color: white;
+}
+
+
 @media only screen and (min-width: 426px){
 body{
     margin-left: 30px;

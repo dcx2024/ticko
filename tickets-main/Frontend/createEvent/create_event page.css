@@ -1,49 +1,283 @@
-body{
-    margin-left: 10px;
-    margin-right: 10px;
+*{
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
 }
-header{
-    background-color: black;
+body {
+  background-color: #f8f9fa;
+  color: #333;
+  font-family: "Montserrat", sans-serif;
 }
 
+a{
+    text-decoration: none;
+}
 
-/* ________________________________________________________________________ */
+/* Header & Nav */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  padding: 0px 76px 5px 75px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+nav {
+  display: flex;
+  gap: 15px;
+}
+
+nav a {
+  color: #4A90E2;
+  font-weight: 500;
+}
+
+/* Logo */
+header img {
+  width: 80px;
+}
+
+.welcome {
+            margin-top: 120px;
+            margin-bottom: 80px;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(48px, 8vw, 72px);
+            font-weight: 700;
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .welcome p {
+            font-size: 18px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+.section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 50px;
+        }
+
+.card {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            min-height: 280px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .writeup {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Sections */
+        .eventInfo, .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            justify-items: center;
+        }
 
 
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1px solid #ddd;
+  display: none;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  z-index: 999;
+}
 
-@media only screen and (max-width: 600px){
-    body{
-        margin-left: 10px;
-        margin-right: 10px;
+.mobile-bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #4A90E2;
+  text-decoration: none;
+}
 
-    }
-    h1{
-        text-align: center;
-        font-size: 30px;
+.mobile-bottom-nav a img {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+}
 
-    }
-    p{
-        text-align: center;
-    }
-    button{
-        display: block;
-        margin: 0 auto;
-    }
-    h2{
-        text-align: center;
-    }
-    #welcome{
-        margin-bottom: 10px;
-    }
-    .features{
+/* Show only on small screens */
+@media only screen and (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+  }
+   .nav {
+  display: none;
+
+}
+
+nav {
+  display: none;
+ 
+}
+
+header img{
+position: absolute;
+top: 0;
+left: 15px
+}
+  header {
+    background-color: transparent;
+    box-shadow: none; /* Prevent overlap */
+  }
+}
+
+  @media only screen and (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                background: rgba(255, 255, 255, 0.98);
+            }
+
+            .nav, nav {
+                display: none;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
+
+            .welcome {
+                margin-top: 100px;
+                margin-bottom: 60px;
+                padding: 40px 20px;
+            }
+
+            .eventInfo, .features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 30px 15px;
+            }
+
+            .card {
+                max-width: 100%;
+                margin: 0 10px;
+            }
+
+  .section-title {
+                font-size: 28px;
+                margin-bottom: 30px;
+            }
+            body {
+                padding-bottom: 80px;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            header {
+                padding: 12px 15px;
+            }
+
+            .welcome {
+                margin-top: 80px;
+                padding: 30px 15px;
+            }
+
+            .card {
+                padding: 30px 20px;
+                margin: 0 5px;
+            }
+
+            .eventInfo, .features {
+                padding: 20px 10px;
+            }
+        }
+
+        /* Additional Enhancements */
+        #CreateEvent {
+            display: block;
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin:0 auto;
+            transition: all 0.3s ease;
+              text-align: center;
+            
+        }
+
+        #CreateEvent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+        }
+
         
-        border: 2px solid black;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
-    
-    h3{
-        text-align: left;
-    }
-    
-}

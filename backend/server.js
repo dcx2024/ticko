@@ -14,14 +14,12 @@ const userProfileRoute = require('./routes/userProfileRoute')
 const ticketTypesRoute = require('./routes/ticketTypesRoute')
 const app = express()
 
-const options = {
-    key: fs.readFileSync(path.join(__dirname, 'cert.key')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert.crt'))
-  };
+
   
 startEventStatusWorker();
 startEmailWorker();
 app.use(express.json())
+app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 app.use('/uploads', express.static(path.join(__dirname,'fileUpload', 'Uploads')));
 app.use(cors())
 

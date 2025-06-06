@@ -24,8 +24,8 @@
 
     const params = JSON.stringify({
       business_name: businessName,
-      bank: bank,
       account_number: account_number,
+      bank_code: bank,
       percentage_charge: 96,
     });
 
@@ -300,7 +300,7 @@ const banks = result.data.map(bank =>({
   code: bank.code
 }))
 
-          return res.status(200).json(banks); // Express response
+          return res.status(200).json({status: true, banks}); // Express response
         } else {
           return res.status(400).json({ error: result.message || 'Failed to fetch banks' });
         }

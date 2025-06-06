@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="event.css" />
+  <title>Events</title>
+</head>
+<body>
+     <header>
+       <a href="../index.html"> <img src="/images/logo-without-bg.png" alt="Ticko Logo"></a>
+        <div class="nav">
+            
+        <nav>
+            <a href="/event.html">Events</a>
+            <a href="">How ticko Works</a>
+            <a href="">Pricing</a>
+            <a href="">About</a>
+        </nav>
+        <div class="acctBtn">
+        <button><a href="./signUp/Sign up.html">Sign In</a></button>
+        <button><a href="./login/Login.html">Log in</a></button>
+    </div>
+    </div>
+    </header>
+
+    <section class="hero">
+        <h1>Discover and book amazing live experiencs</h1>
+    </section>
+    <section class="search-section">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search events...">
+                <select class="date-filter" id="dateFilter">
+                    <option value="">All Dates</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                    <option value="this-week">This Week</option>
+                    <option value="this-month">This Month</option>
+                </select>
+                <select class="location-filter" id="locationFilter">
+                    <option value="">All Locations</option>
+                    <option value="new-york">New York</option>
+                    <option value="los-angeles">Los Angeles</option>
+                    <option value="chicago">Chicago</option>
+                    <option value="miami">Miami</option>
+                </select>
+                <button class="search-btn" onclick="filterEvents()">Search</button>
+            </div>
+        </section>
+  <section class="events" id="eventContainer">
+    <!-- Event cards will be inserted here dynamically -->
+  </section>
+
+
+
+  <nav class="mobile-bottom-nav">
+  <a href="./events/events-1.html">
+    <img src="/icons/events-icon.svg" alt="Events">
+    <span>Events</span>
+  </a>
+  <a href="#">
+    <img src="/icons/how-icon.svg" alt="How it works">
+    <span>How It Works</span>
+  </a>
+  <a href="#">
+    <img src="/icons/pricing-icon.svg" alt="Pricing">
+    <span>Pricing</span>
+  </a>
+  <a href="#">
+    <img src="/icons/account-icon.svg" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      try {
+        const response = await fetch("http://localhost:3000/api/event/getEvents");
+        const events = await response.json();
+
+        const eventContainer = document.getElementById("eventContainer");
+        events.forEach((event) => {
+          const card = document.createElement("div");
+          card.className = "container";
+
+          card.innerHTML = `
+            <a href="../selectEvent/selectEvent.html?id=${event.id}" style="text-decoration:none; color: inherit;">
+              <img src="http://localhost:3000${event.image}" alt="Event Image" width="100%" />
+              <div class="eventData">
+                <h4>${event.name}</h4>
+                <div class="date-line">
+                  <img src="/icons/Clock.png" alt="Clock Icon" />
+                  <p>${new Date(event.start_time).toLocaleDateString()}</p>
+                </div>
+                <div class="location-line">
+                  <img src="/icons/calendar.png" alt="Calendar Icon" />
+                  <p>${event.location}</p>
+                </div>
+              </div>
+            </a>
+          `;
+
+          eventContainer.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading events:", error);
+      }
+    });
+  </script>
+</body>
+</html>

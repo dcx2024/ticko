@@ -60,6 +60,7 @@ console.log('Stored hash:', user?.password);
       { id: user.id, role: user.role,email:user.email },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
+      
     );
 
     const { password: _, ...safeUser } = user; // exclude password

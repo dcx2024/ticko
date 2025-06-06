@@ -58,7 +58,10 @@
                 <input type="hidden" id="event-id" value="stuff" required> <!-- Hidden event ID -->
             </div>
             
-            <button type="submit">Submit</button>
+           <div class="form-navigation">
+    <button type="button" onclick="switchTab('ticket')">Next</button>
+</div>
+
         </form>
     </div>
 
@@ -82,8 +85,10 @@
                     <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm1')">Remove Ticket Type</button>
                 </div>
             </div>
-            <button type="button" onclick="addTicketForm()">Add Another Ticket Type</button><br><br>
-            <button type="submit">Submit Ticket Details</button>
+       <div class="form-navigation">
+    <button type="button" onclick="switchTab('event')">Previous</button>
+    <button type="button" onclick="switchTab('account')">Next</button>
+</div>
         </form>
         <a href="../events/event.html"></a>
     </div>
@@ -101,12 +106,15 @@
     </div>
     <div class="input-fields">
         <label for="bank">Bank:</label>
-        <select id="bankSelect">
-            <option value="">Select a bank</option>
-        </select>
-        <input type="text" id="bank" name="bank" required placeholder="Bank Name">
+<select id="bankSelect" name="bank" required>
+  <option value="">Select a bank</option>
+</select>
     </div>
-    <button type="submit">Submit Account Details</button>
+ <div class="form-navigation">
+    <button type="button" onclick="switchTab('ticket')">Previous</button>
+    <button type="button" id="submitAll">Submit All</button>
+</div>
+
 </form>
 </div>
 
@@ -207,7 +215,7 @@ function switchTab(tab) {
 
         let eventId = null;  // Global variable, accessible across your script
 
-        document.getElementById('eventDetailsForm').addEventListener('submit', async function(e) {
+      /*  document.getElementById('eventDetailsForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const token = sessionStorage.getItem('token');
@@ -326,10 +334,16 @@ formData.append('end_time', end_time);
 
             const businessName = document.getElementById('businessName').value;
             const account_number= document.getElementById('accountNumber').value;
-            const bank = document.getElementById('bank').value;
+            const bank = document.getElementById('bankSelect').value;
                 const event_id = sessionStorage.getItem('eventId');
 
-                console.log(businessName,account_number,bank,event_id)
+                const payload = {
+  businessName: businessName,
+  account_number: account_number,
+  bank: bank, // This must be the `code` like "044"
+  event_id: event_id
+};
+                console.log(payload)
             try{
                 const response = await fetch('http://localhost:3000/api/payment/createSubAcct', {
   method: 'POST',
@@ -341,26 +355,155 @@ formData.append('end_time', end_time);
     event_id
   })
                 })
-
                 const result = await response.json();
                 console.log(result)
 
             }catch(error) {
-                    console.error('Error sending accoubt data:', error);
+                    console.error('Error sending account data:', error);
                     alert('Could not send Account details to server.');
+                    console.log(error)
                     return;
                 }
 
-        })
+        })*/
+
+document.getElementById('submitAll').addEventListener('click', async function () {
+    const token = sessionStorage.getItem('token');
+    if (!token) return alert('Not authenticated');
+
+    // ===== 1. Submit Event Form =====
+    const eventName = document.getElementById('event-name').value;
+    const eventDescription = document.getElementById('event-description').value;
+    const eventImage = document.getElementById('event-image').files[0];
+    const eventLocation = document.getElementById('event-location').value;
+    const eventStatus = document.getElementById('event-status').value;
+    const start_time = document.getElementById('start-time').value;
+    const end_time = document.getElementById('end-time').value;
+    
+
+    if (!eventName || !eventDescription || !eventImage || !eventLocation || !eventStatus) {
+        alert('Please complete all event fields.');
+        return;
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(eventImage.type)) {
+        alert('Please upload a valid image (jpeg, png, gif)');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', eventName);
+    formData.append('description', eventDescription);
+    formData.append('image', eventImage);
+    formData.append('location', eventLocation);
+    formData.append('status', eventStatus);
+    formData.append('start_time', start_time);
+    formData.append('end_time', end_time);
+const businessName = document.getElementById('businessName').value;
+const account_number = document.getElementById('accountNumber').value;
+const bank = document.getElementById('bankSelect').value;
+
+formData.append('business_name', businessName);
+formData.append('business_account_number', account_number);
+formData.append('business_bank', bank);
+
+sessionStorage.setItem("business_name",businessName)
+sessionStorage.setItem("business-account_number",account_number)
+sessionStorage.setItem("business_bank", bank)
+
+
+let eventId;
+    try {
+        const eventRes = await fetch('http://localhost:3000/api/event/createEvents', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const eventData = await eventRes.json();
+
+        if (!eventRes.ok) throw new Error(eventData.message);
+        eventId = eventData.id;
+        sessionStorage.setItem('eventId', eventId);
+        console.log("Event created:", eventData);
+    } catch (err) {
+        console.error('Event error:', err);
+        return alert('Failed to create event.');
+    }
+
+    // ===== 2. Submit Ticket Types =====
+    const ticketGroups = document.querySelectorAll('.ticket-form-group');
+    for (let group of ticketGroups) {
+        const type = group.querySelector('input[name="ticketType[]"]').value;
+        const price = group.querySelector('input[name="ticketPrice[]"]').value;
+        const availability = group.querySelector('input[name="ticketAvailability[]"]').value;
+
+        if (!type || !price || !availability) {
+            return alert('Please complete all ticket fields.');
+        }
+
+        try {
+            const res = await fetch('http://localhost:3000/api/ticket/createTicketTypes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    type_name: type,
+                    price: price,
+                    available_tickets: availability
+                })
+            });
+            const result = await res.json();
+            if (!result.status) {
+                console.error('Ticket error:', result);
+                return alert('Error saving ticket: ' + result.message);
+            }
+        } catch (err) {
+            console.error('Ticket submit failed:', err);
+            return alert('Failed to submit ticket.');
+        }
+    }
+
+    // ===== 3. Submit Account Details =====
+
+ 
+    
+    try {
+
+        const accountRes = await fetch('http://localhost:3000/api/payment/createSubAcct', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                businessName,
+                account_number,
+                bank,
+                event_id: eventId
+            })
+        });
+        const accountData = await accountRes.json();
+        if (!accountData.status) {
+            console.error('Account error:', accountData);
+            return alert('Failed to create sub account.');
+        }
+    } catch (err) {
+        console.error('Account submit failed:', err);
+        return alert('Failed to submit account.');
+    }
+
+    alert('🎉 All data submitted successfully!');
+    window.location.href = '../events/event.html'; // or wherever you want to go
+});
+
 
 
         async function loadBanks(){
             try{
-                const res = await fetch('https://localhost:3000/api/payment/fetchBanks')
+                const res = await fetch('http://localhost:3000/api/payment/fetchBanks');
                 const data = await res.json()
 
                 if(data.status && data.banks){
-                    const select = document.getElementById('bankSelect');
+                 const select = document.getElementById('bankSelect');
+
 
                     data.banks.forEach(bank => {
                         const option = document.createElement('option')

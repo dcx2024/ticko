@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,11 +7,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="landingpage.css">
-    <title>Document</title>
+        <link rel="icon" href="/images/logo-without-bg.png">
+    <title>Ticko</title>
 </head>
 <body>
     <header>
-        <img src="/images/logo-wihtout bg.png" alt="Ticko Logo">
+        <img src="./images/logo-without-bg.png" alt="Ticko Logo">
         <div class="nav">
             
         <nav>
@@ -21,8 +22,8 @@
             <a href="">About</a>
         </nav>
         <div class="acctBtn">
-        <button><a href="/tickets-main/Frontend/signUp/Sign up.html">Sign In</a></button>
-        <button><a href="/tickets-main/Frontend/login/Login.html">Log in</a></button>
+        <button><a href="./signUp/Sign up.html">Sign In</a></button>
+        <button><a href="./login/Login.html">Log in</a></button>
     </div>
     </div>
     </header>
@@ -78,7 +79,7 @@
    </section>
 <footer>
     <div>
-       <img src="/images/logo-wihtout bg.png">
+       <img src="/images/logo-without-bg.png">
         <p>The modern way to discover and  book ticktes for the events</p>
     </div>
 
@@ -104,28 +105,10 @@
         <!--facebook,twitter,instagram-->
     </div>
 </footer>
-<script>
-    document.addEventListener('DOMContentLoaded',()=>{
-        fetch('http://localhost:3000/api/event/getEvents')
-        .then(response => response.json())
-        .then(event =>{
-            const events = event;
-            const list = document.getElementById('featured-events-list');
-            events.forEach(event =>{
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>${event.name}</strong><br>
-                <img src='${event.image}'>
-                ${new Date(event.date).toLocaleDateString()} @${event.location}`
-list.appendChild(li)
-            })
-        }).catch(error =>{
-            console.error('Error loading events:' ,error)
-        })
-    })
-</script>
+
 
 <nav class="mobile-bottom-nav">
-  <a href="./events/event.html">
+  <a href="./events/events-1.html">
     <img src="/icons/events-icon.svg" alt="Events">
     <span>Events</span>
   </a>

@@ -5,7 +5,11 @@ const router = express.Router()
 
 router.post('/initialize', initializePayment)
 router.get('/verify/',verifyPayment)
-router.post('/createSubAcct',createSubAccount)
+router.post('/createSubAcct', (req, res) => {
+  if (!req.body.bank) {
+    return res.status(400).json({ error: 'Bank code is required' }); // <-- maybe this is your error
+  }
+});
 router.get('/fetchBanks', fetchBanks)
 
 

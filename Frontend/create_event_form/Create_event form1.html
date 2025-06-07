@@ -215,157 +215,6 @@ function switchTab(tab) {
 
         let eventId = null;  // Global variable, accessible across your script
 
-      /*  document.getElementById('eventDetailsForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const token = sessionStorage.getItem('token');
-            if (!token) return alert('Not authenticated');
-
-
-            const formData = new FormData();
-            const eventName = document.getElementById('event-name').value;
-            const eventDescription = document.getElementById('event-description').value;
-         
-            const eventImage = document.getElementById('event-image').files[0];
-            const eventLocation = document.getElementById('event-location').value;
-            const eventStatus = document.getElementById('event-status').value;
-const start_time=document.getElementById('start-time').value;
-const end_time=document.getElementById('end-time').value;
-            if (!eventName || !eventDescription || !eventImage || !eventLocation || !eventStatus) {
-                alert('Please complete all fields.');
-                return;
-            }
-
-            const fileType = eventImage.type;
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!allowedTypes.includes(fileType)) {
-                alert('Please upload a valid image (jpeg, png, gif)');
-                return;
-            }
-
-            formData.append('name', eventName);
-            formData.append('description', eventDescription);
-
-            formData.append('image', eventImage);
-            formData.append('location', eventLocation);
-            formData.append('start_time', start_time);
-formData.append('end_time', end_time);
-
-            formData.append('status', eventStatus);
-
-            try {
-                const res = await fetch('http://localhost:3000/api/event/createEvents', {
-                    method: 'POST',
-                    headers: {
-      
-      'Authorization': `Bearer ${token}`
-    },
-                    body: formData
-                });
-
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    alert('Error: ' + errorData.message);
-                    return;
-                }
-
-                const data = await res.json();
-                sessionStorage.setItem('eventId', data.id);
-                
-                alert(data.message);
-                alert('Event created successfully! Now you can add ticket details.');
-                switchTab('ticket');
-            } catch (error) {
-                console.error('Error creating event:', error);
-                alert('Error creating event. Please try again later.');
-            }
-        });
-
-        document.getElementById('ticketDetailsForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const eventId = sessionStorage.getItem('eventId');
-            console.log('Using eventId:', eventId);
-
-            if (!eventId) {
-                alert('Event ID not found. Please create the event first.');
-                return;
-            }
-
-            const ticketGroups = document.querySelectorAll('.ticket-form-group');
-            for (let group of ticketGroups) {
-                const type = group.querySelector('input[name="ticketType[]"]').value;
-                const price = group.querySelector('input[name="ticketPrice[]"]').value;
-                const availability = group.querySelector('input[name="ticketAvailability[]"]').value;
-
-                const ticketData = {
-                    event_id: eventId,
-                    type_name: type,
-                    price: price,
-                    available_tickets: availability
-                };
-
-                try {
-                    const response = await fetch('http://localhost:3000/api/ticket/createTicketTypes', {
-                        method: 'POST',
-                        headers: { 'Content-type': 'application/json' },
-                        body: JSON.stringify(ticketData)
-                    });
-
-                    const result = await response.json();
-                    console.log(result);
-                    if (!result.status) {
-                        alert(`Error saving ticket: ${result.message}`);
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Error sending ticket data:', error);
-                    alert('Could not send ticket to server.');
-                    return;
-                }
-            }
-            alert('All tickets saved successfully!');
-            // redirect to events page
-          
-
-        });
-
-        document.getElementById('accountDetailsForm').addEventListener('submit',async function(e){
-             e.preventDefault();
-
-            const businessName = document.getElementById('businessName').value;
-            const account_number= document.getElementById('accountNumber').value;
-            const bank = document.getElementById('bankSelect').value;
-                const event_id = sessionStorage.getItem('eventId');
-
-                const payload = {
-  businessName: businessName,
-  account_number: account_number,
-  bank: bank, // This must be the `code` like "044"
-  event_id: event_id
-};
-                console.log(payload)
-            try{
-                const response = await fetch('http://localhost:3000/api/payment/createSubAcct', {
-  method: 'POST',
-  headers: { 'Content-type': 'application/json' },
-  body: JSON.stringify({
-    businessName,
-    account_number,
-    bank,
-    event_id
-  })
-                })
-                const result = await response.json();
-                console.log(result)
-
-            }catch(error) {
-                    console.error('Error sending account data:', error);
-                    alert('Could not send Account details to server.');
-                    console.log(error)
-                    return;
-                }
-
-        })*/
 
 document.getElementById('submitAll').addEventListener('click', async function () {
     const token = sessionStorage.getItem('token');
@@ -377,8 +226,23 @@ document.getElementById('submitAll').addEventListener('click', async function ()
     const eventImage = document.getElementById('event-image').files[0];
     const eventLocation = document.getElementById('event-location').value;
     const eventStatus = document.getElementById('event-status').value;
-    const start_time = document.getElementById('start-time').value;
-    const end_time = document.getElementById('end-time').value;
+    
+    
+    function toLagosISOString(localDateTimeStr) {
+    const localDate = new Date(localDateTimeStr);
+    // Offset to Nigeria's timezone (Africa/Lagos, UTC+1 or +1/+1 DST)
+    return localDate.toLocaleString('sv-SE', { timeZone: 'Africa/Lagos' }).replace(' ', 'T');
+}
+
+const rawStart = document.getElementById('start-time').value;
+const rawEnd = document.getElementById('end-time').value;
+
+const start_time = toLagosISOString(rawStart);
+const end_time = toLagosISOString(rawEnd);
+
+formData.append('start_time', start_time);
+formData.append('end_time', end_time);
+
     
 
     if (!eventName || !eventDescription || !eventImage || !eventLocation || !eventStatus) {
@@ -398,8 +262,7 @@ document.getElementById('submitAll').addEventListener('click', async function ()
     formData.append('image', eventImage);
     formData.append('location', eventLocation);
     formData.append('status', eventStatus);
-    formData.append('start_time', start_time);
-    formData.append('end_time', end_time);
+    
 const businessName = document.getElementById('businessName').value;
 const account_number = document.getElementById('accountNumber').value;
 const bank = document.getElementById('bankSelect').value;

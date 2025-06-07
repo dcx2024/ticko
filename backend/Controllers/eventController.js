@@ -69,7 +69,10 @@ const getEventByIdHandler = async (req, res) => {
                 id: data.event.id,
                 name: data.event.name,
                 description: data.event.description,
-                date: data.event.date,
+                start_time:data.event.start_time,
+                end_time:data.event.end_time,
+                image: data.event.image,
+                location: data.event.location,
                 ticket_types: data.tickets.map(ticket => ({
                     id: ticket.id,
                     name: ticket.type_name,

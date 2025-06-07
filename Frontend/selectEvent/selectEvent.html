@@ -3,41 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="selectEvent.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <title>Event Details</title>
 </head>
 <body>
+
+    <header>
+        <a href="../index.html"><img src="../images/logo-without-bg.png" alt="Ticko Logo"></a>
+        <div class="nav">
+            
+        <nav>
+            <a href="./events/event.html">Events</a>
+            <a href="">How ticko Works</a>
+            <a href="">Pricing</a>
+            <a href="">About</a>
+        </nav>
+      
+    </div>
+    </header>
+    <nav class="mobile-bottom-nav">
+  <a href="./events/events-1.html">
+    <img src="/icons/events-icon.svg" alt="Events">
+    <span>Events</span>
+  </a>
+  <a href="#">
+    <img src="/icons/how-icon.svg" alt="How it works">
+    <span>How It Works</span>
+  </a>
+  <a href="#">
+    <img src="/icons/pricing-icon.svg" alt="Pricing">
+    <span>Pricing</span>
+  </a>
+  <a href="#">
+    <img src="/icons/account-icon.svg" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
     <div id="event_details"></div>
-</body>
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const eventId = params.get('id');
 
-    fetch(`http://localhost:3000/api/event/${eventId}`)
-    .then(res => {
-        if (!res.ok) throw new Error('Event not found');
-        return res.json();
-    })
-    .then(data => {
-        console.log('Full Event Data:', data);
-
-        if (!data || !data.id) {  // Fix: check for id instead of data.event
-            throw new Error('Invalid event data');
+    <script>
+        // Helper function to convert ISO time to 12-hour format with AM/PM
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('en-NG', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'Africa/Lagos'
+            });
         }
 
-        // Since the data is the event directly, no need for .event
-        const event = data;
-        console.log("Event details:", event);
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get('id');
 
-        document.getElementById('event_details').innerHTML = `
-            <h2>${event.name}</h2>
-            <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
-            <p>${event.description}</p>
-            <button onclick="window.location.href='../payment/payment.html?id=${eventId}'">Pay Now</button>
-        `;
-    })
-    .catch(err => {
-        console.error('Error:', err);
-        document.getElementById('event_details').innerHTML = 'Event not found';
-    });
-</script>
+        fetch(`http://localhost:3000/api/event/${eventId}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Event not found');
+            return res.json();
+        })
+        .then(data => {
+            console.log('Full Event Data:', data);
+
+            if (!data || !data.id) {
+                throw new Error('Invalid event data');
+            }
+
+            const event = data;
+            console.log("Event details:", event);
+
+            document.getElementById('event_details').innerHTML = `
+            <section class="event-details">
+            <div class>
+                <img class="eventImage"src="http://localhost:3000${event.image}" alt="Event Image" />
+                <h2>${event.name}</h2>
+                <button onclick="window.location.href='../payment/payment.html?id=${eventId}'" class="ticketBuy">Get a ticket</button>
+</div>
+<div class="text-section">
+    <div class="date-line">
+        <img src="/icons/calendar.png">
+                <p>${new Date(event.start_time).toLocaleDateString()}-${new Date(event.end_time).toLocaleDateString()}</p>
+                </div>
+                <div class="time-line">
+                    <img src="/icons/Clock.png">
+                <p> ${formatTime(event.start_time)} - ${formatTime(event.end_time)}</p>
+                </div>
+                <div class="location-line">
+                    <img src="/icons/Location.png">
+                <p> ${event.location}</p>
+                </div>
+                <h4>Description:</h4>
+                <p>${event.description}</p>
+                </div>
+                </section>
+            `;
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            document.getElementById('event_details').innerHTML = 'Event not found';
+        });
+    </script>
+</body>
 </html>

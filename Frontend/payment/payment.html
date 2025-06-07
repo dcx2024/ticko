@@ -37,6 +37,15 @@
 </head>
 
 <body>
+<button>
+Tickets
+</button>
+<button>
+  Contact
+</button>
+
+
+
   <div class="container">
     <h1>Complete Your Payment</h1>
     <div class="event-details">
@@ -97,6 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       .then(response => response.json())
       .then(result => {
         const ticketTypes = result.data;
+        const availableTickets = result.data.available_tickets
         const ticketTypeSelector = document.getElementById('ticketType');
 
         ticketTypes.forEach(ticketType => {

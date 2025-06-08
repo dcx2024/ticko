@@ -317,8 +317,8 @@ footer {
   justify-content: space-between;
   padding: 60px 20px;
   margin-top: 50px;
-  background-color: #4A90E2;
-  color: white;
+  background-color: #6AA4E7;
+  color: black;
 }
 
 footer img{
@@ -327,6 +327,7 @@ footer img{
 
 footer p {
   width: 70%;
+  color: black
 }
 
 footer ul {
@@ -336,6 +337,7 @@ footer ul {
 
 a {
   text-decoration: none;
+  color: black
 }
 
 @media only screen and (max-width:1100px){

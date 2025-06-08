@@ -1,0 +1,230 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    padding: 20px;
+    color: #333;
+}
+
+/* Progress Indicator */
+.tickets,
+.contact {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.progress-indicator {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Ticket Chooser — preserve original layout */
+.ticket-chooser {
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+/* Summary */
+#summary {
+    width: 60vw;
+    min-height: 160px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    
+}
+
+#summary::before {
+    content: "Your ticket summary will appear here...";
+    color: #aaa;
+    font-style: italic;
+}
+
+    .payment-page {
+      display: flex;
+      gap: 30px;
+      padding: 20px 0;
+    }
+
+    .payment-form {
+      flex: 1;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Reuse your existing summary style with slight adjustment */
+    .payment-summary {
+      width: 40%;
+      min-height: 160px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 768px) {
+      .payment-page {
+        flex-direction: column;
+      }
+
+      .payment-summary {
+        width: 100%;
+        margin-top: 20px;
+      }
+    }
+
+/* Utility */
+.hidden {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.ticket-page {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.ticket-container {
+    width: 60vw;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Preserve your heading sizes */
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="datetime-local"],
+select,
+textarea {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px 10px;
+    margin: 5px 0 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+input[type="number"] {
+    width: 60px;
+    padding: 5px 8px;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #007BFF;
+}
+
+/* Buttons */
+button {
+    padding: 10px 16px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Right-aligned fee summary */
+span {
+    right: 5vw;
+    position: absolute;
+}
+
+/* Form & Layout Helpers */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.formEntry {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Responsive Enhancements Only */
+@media screen and (max-width: 768px) {
+  .ticket-page {
+    flex-direction: column;
+    padding: 0;
+    margin: 0 -20px;
+  }
+
+  
+  #ticket-selector {
+    width: 100vw;      
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 20px;      
+    box-sizing: border-box;
+  }
+
+  
+  .ticket-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+ 
+  #summary {
+    width: 100%;
+    margin: 20px 0;
+  }
+}
+

@@ -18,7 +18,6 @@ const sendMail = async (mailOptions) => {
 };
 
 const adminSendMail = async(adminMailOptions)=>{
-
     return transporter.sendMail(adminMailOptions)
 }
 

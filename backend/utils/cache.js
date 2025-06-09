@@ -26,9 +26,14 @@ const getOrSetCache = async (key, ttl, fetchFunction) => {
 // Delete cache (for invalidation)
 const invalidateCache = async (key) => {
     try {
-        await client.del(key);
+        const result = await client.del(key);
+        if (result) {
+            console.log(`✅ Cache invalidated for key: ${key}`);
+        } else {
+            console.log(`⚠️ No cache found for key: ${key}`);
+        }
     } catch (error) {
-        console.error(`Cache deletion error: ${error.message}`);
+        console.error(`❌ Cache deletion error: ${error.message}`);
     }
 };
 

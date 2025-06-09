@@ -5,6 +5,7 @@ const https = require('https')
 const fs = require('fs')
 const startEventStatusWorker = require('./worker/eventStatusWorker')
 const startEmailWorker = require('./email-worker/emailWorker')
+const ticketMonitor = require("./email-worker/ticket-monitor")
 const authRoutes = require('./routes/signUp')
 const eventRoutes = require('./routes/eventRoute')
 const userResetRoutes = require('./routes/passwordRoute')
@@ -15,7 +16,7 @@ const ticketTypesRoute = require('./routes/ticketTypesRoute')
 const app = express()
 
 
-  
+  ticketMonitor()
 startEventStatusWorker();
 startEmailWorker();
 app.use(express.json())
@@ -36,4 +37,5 @@ app.use('/api', ticketTypesRoute)
     console.log("Server is listening on port 3000")
 })*/
 
-app.listen(3000, ()=> console.log("Server is listening on port 3000"))
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));

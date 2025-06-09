@@ -1,4 +1,6 @@
     const { createTicket, createTicketForAFriend } = require('../models/ticketModel');
+    const { getEventById } = require('../models/eventModel');
+    const {invalidateCache} = require('../utils/cache')
     const db = require('../config/db');
     require('dotenv').config();
     const https = require('https');
@@ -96,9 +98,9 @@
 
 
   const initializePayment = async (req, res) => {
-    const { email, event_id, user_id, tickets, friend_email } = req.body;
+    const { name, email, event_id, user_id, tickets, friend_email } = req.body;
 
-    if (!email || !event_id || !user_id || !tickets || !Array.isArray(tickets) || tickets.length === 0) {
+    if (!email || !event_id || !tickets || !Array.isArray(tickets) || tickets.length === 0) {
       return res.status(400).json({ error: 'Missing required fields or no tickets selected' });
     }
 
@@ -127,7 +129,7 @@
       const params = JSON.stringify({
         email,
         amount: totalAmount,
-        metadata: { event_id, user_id, tickets, ...(friend_email && { friend_email }) },
+        metadata: { event_id,user_id: user_id || null, tickets,name,email, ...(friend_email && { friend_email }) },
         callback_url: 'http://localhost:3000/api/payment/verify/',
       });
 
@@ -154,8 +156,8 @@
             if (result.status && result.data.reference) {
               const reference = result.data.reference;
 await db.query(
-  'INSERT INTO payments (email, amount, reference, event_id, user_id, friend_email, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-  [email, totalAmount, reference, event_id, user_id, friend_email || null, JSON.stringify(tickets)]
+  'INSERT INTO payments ( email, name, amount, reference, event_id, user_id, friend_email, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+  [email, name, totalAmount, reference, event_id, user_id || null, friend_email || null, JSON.stringify(tickets)]
 );
 
 
@@ -186,110 +188,172 @@ await db.query(
   };
 
 
-  const verifyPayment = async (req, res) => {
-    const { reference, trxref } = req.query;
-    const paymentReference = reference || trxref;
+// Use this helper for updating tickets and invalidating cache
+const updateAvailableTickets = async (event_id, ticket_type_id, quantity) => {
+  const updateResult = await db.query(
+    `UPDATE ticket_types
+     SET available_tickets = available_tickets - $1
+     WHERE id = $2 AND available_tickets >= $1
+     RETURNING available_tickets`,
+    [quantity, ticket_type_id]
+  );
 
-    if (!paymentReference) {
-      return res.status(400).json({ error: 'Reference is required' });
-    }
+  if (updateResult.rows.length === 0) {
+    throw new Error('Not enough tickets available or ticket type not found');
+  }
 
-    const options = {
-      hostname: 'api.paystack.co',
-      port: 443,
-      path: `/transaction/verify/${encodeURIComponent(paymentReference)}`,
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`,
-      },
-    };
+  // Invalidate cache for this event's ticket types (adjust cache key if needed)
+  await invalidateCache(`event:${event_id}:ticket_types`);
+await invalidateCache(`event:${event_id}`)
 
-    const verifyReq = https.request(options, (verifyRes) => {
-      let data = '';
+  return updateResult.rows[0].available_tickets;
+};
 
-      verifyRes.on('data', (chunk) => { data += chunk; });
+const verifyPayment = async (req, res) => {
+  const { reference, trxref } = req.query;
+  const paymentReference = reference || trxref;
 
-      verifyRes.on('end', async () => {
-        try {
-          const result = JSON.parse(data);
+  if (!paymentReference) {
+    return res.status(400).json({ error: 'Reference is required' });
+  }
 
-          if (result.status && result.data.status === 'success') {
-            const paymentResult = await db.query(
-              'SELECT event_id, user_id, friend_email, metadata FROM payments WHERE reference = $1',
-              [paymentReference]
+  const options = {
+    hostname: 'api.paystack.co',
+    port: 443,
+    path: `/transaction/verify/${encodeURIComponent(paymentReference)}`,
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET}`,
+    },
+  };
+
+  const verifyReq = https.request(options, (verifyRes) => {
+    let data = '';
+
+    verifyRes.on('data', (chunk) => { data += chunk; });
+
+    verifyRes.on('end', async () => {
+      try {
+        const result = JSON.parse(data);
+
+        if (result.status && result.data.status === 'success') {
+          // Fetch payment details from DB
+          const paymentResult = await db.query(
+            'SELECT event_id, user_id, friend_email, name, email, metadata FROM payments WHERE reference = $1',
+            [paymentReference]
+          );
+
+          if (paymentResult.rows.length === 0) {
+            return res.status(400).json({ error: 'Payment not found in the database' });
+          }
+
+          const { event_id, user_id, friend_email, name, email, metadata } = paymentResult.rows[0];
+
+          let ticketArray;
+          try {
+            if (typeof metadata === 'string') {
+              ticketArray = JSON.parse(metadata);
+            } else {
+              ticketArray = metadata;
+            }
+          } catch (err) {
+            console.error('Failed to parse ticket metadata:', err);
+            return res.status(500).json({ error: 'Failed to parse ticket metadata from DB' });
+          }
+
+          const createdTickets = [];
+
+          // Process each ticket type in the payment
+          for (const ticket of ticketArray) {
+            const { ticket_type_id, quantity } = ticket;
+
+            // Double-check ticket availability in DB
+            const ticketCheck = await db.query(
+              'SELECT available_tickets FROM ticket_types WHERE id = $1',
+              [ticket_type_id]
             );
 
-            if (paymentResult.rows.length === 0) {
-              return res.status(400).json({ error: 'Payment not found in the database' });
+            if (
+              ticketCheck.rows.length === 0 ||
+              ticketCheck.rows[0].available_tickets < quantity
+            ) {
+              return res.status(400).json({
+                error: `Not enough tickets available for ticket type ${ticket_type_id}`,
+              });
             }
 
-           const { event_id, user_id, friend_email, metadata } = paymentResult.rows[0];
-
-let ticketArray;
-let createdTickets=[]
-
-try {
-  if (typeof metadata === 'string') {
-    console.log('Raw metadata from DB:', metadata);
-
-    ticketArray = JSON.parse(metadata);
-  } else {
-    ticketArray = metadata;
-  }
-} catch (err) {
-  console.error('Bad metadata value:', metadata);
-  return res.status(500).json({ error: 'Failed to parse ticket metadata from DB' });
-}
-
-
-
-            for (const ticket of ticketArray) {
-              const { ticket_type_id, quantity } = ticket;
-
-              let ticketResult;
-              if (friend_email) {
-                ticketResult = await createTicketForAFriend(event_id, user_id, ticket_type_id, friend_email, quantity);
+            // Create tickets accordingly
+            let ticketResult;
+            if (friend_email) {
+              if (user_id) {
+                // Registered user buying for friend
+                ticketResult = await createTicketForAFriend(
+                  event_id,
+                  user_id,
+                  ticket_type_id,
+                  friend_email,
+                  { quantity }
+                );
               } else {
-                ticketResult = await createTicket(event_id, user_id, ticket_type_id, quantity);
+                // Guest buying for friend
+                ticketResult = await createTicketForAFriend(
+                  event_id,
+                  null,
+                  ticket_type_id,
+                  friend_email,
+                  {
+                    name,
+                    email,
+                    quantity,
+                  }
+                );
               }
-
-              createdTickets.push(ticketResult);
-
-              await db.query(
-                'UPDATE ticket_types SET available_tickets = available_tickets - $1 WHERE id = $2',
-                [quantity, ticket_type_id]
+            } else {
+              // Buying for self
+              ticketResult = await createTicket(
+                event_id,
+                user_id || null,
+                ticket_type_id,
+                quantity,
+                { name, email }
               );
             }
 
-            await db.query(
-              'UPDATE payments SET verified = true, verified_at = CURRENT_TIMESTAMP WHERE reference = $1',
-              [paymentReference]
-            );
+            createdTickets.push(ticketResult);
 
-            res.json({
-              status: 'success',
-              message: 'Payment verified and tickets created.',
-              tickets: createdTickets,
-            });
-
-          } else {
-            res.status(400).json({ error: 'Payment failed or pending' });
+            // Update available tickets and invalidate cache
+            await updateAvailableTickets(event_id, ticket_type_id, quantity);
           }
 
-        } catch (err) {
-          console.error('Error verifying payment:', err);
-          res.status(500).json({ error: 'Error verifying payment' });
+          // Mark payment as verified
+          await db.query(
+            'UPDATE payments SET verified = true, verified_at = CURRENT_TIMESTAMP WHERE reference = $1',
+            [paymentReference]
+          );
+
+          return res.json({
+            status: 'success',
+            message: 'Payment verified and tickets created.',
+            tickets: createdTickets,
+          });
+        } else {
+          return res.status(400).json({ error: 'Payment failed or pending' });
         }
-      });
+      } catch (err) {
+        console.error('Error verifying payment:', err);
+        return res.status(500).json({ error: 'Error verifying payment' });
+      }
     });
+  });
 
-    verifyReq.on('error', (error) => {
-      console.error('Verification request error:', error);
-      res.status(500).json({ error: 'Payment verification failed' });
-    });
+  verifyReq.on('error', (error) => {
+    console.error('Verification request error:', error);
+    res.status(500).json({ error: 'Payment verification failed' });
+  });
 
-    verifyReq.end();
-  };
+  verifyReq.end();
+};
+
 
 
   const fetchBanks = async (req, res) => {

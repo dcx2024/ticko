@@ -1,361 +1,387 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event Payment</title>
-  <link rel="stylesheet" href="checkout.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-</head>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Payment</title>
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  </head>
 
-<body>
-  <section class="progress-indicator">
-    <div class="tickets">
-      <p>Tickets</p>
-      <img src="/icons/unchecked.png" />
-    </div>
-
-    <div class="contact">
-      <p>Contact Information</p>
-      <img src="/icons/unchecked.png" />
-    </div>
-  </section>
-
-  <div class="container">
-    <h1>Complete Your Payment</h1>
-    <div class="event-details">
-      <p id="eventAmount"></p>
-    </div>
-
-    <!-- Ticket selection page -->
-    <section id="ticket-page" class="ticket-page">
-      <section id="ticket-selector"></section>
-      <section id="summary">
-        <!-- Summary on ticket selection page -->
-      </section>
-    </section>
-
-    <!-- Payment page with form + summary side-by-side -->
-    <div class="payment-page hidden" id="paymentPage">
-      <div class="payment-form">
-        <form id="paymentForm">
-          <div class="formEntry">
-            <label for="Fname">Your First Name:</label>
-            <input
-              type="text"
-              id="Fname"
-              name="Fname"
-              required
-              placeholder="Enter your First Name"
-            />
-
-            <label for="Lname">Your Last Name:</label>
-            <input
-              type="text"
-              id="Lname"
-              name="Lname"
-              required
-              placeholder="Enter your Last Name"
-            />
-          </div>
-
-          <div class="formEntry">
-            <label for="email">Your Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div class="formEntry">
-            <label for="confirmEmail">Confirm Email Address:</label>
-            <input
-              type="email"
-              id="confirmEmail"
-              name="confirmEmail"
-              required
-              placeholder="Confirm Email address"
-            />
-          </div>
-
-          <div class="formEntry">
-            <label class="checkbox">
-              <input type="checkbox" id="buyForFriend" />
-              Buy for a Friend
-            </label>
-          </div>
-
-          <div id="friendEmailContainer" class="hidden">
-            <label for="friendEmail">Friend's Email:</label>
-            <input
-              type="email"
-              id="friendEmail"
-              placeholder="Enter friend's email"
-            />
-          </div>
-
-          <input type="hidden" id="eventId" name="eventId" />
-
-          <button type="submit">Proceed to Payment</button>
-        </form>
+  <body>
+    <section class="progress-indicator">
+      <div class="tickets">
+        <p>Tickets</p>
+        <img src="/icons/unchecked.png" />
       </div>
 
-      <section id="summary" class="payment-summary">
-        <!-- Summary on payment page -->
+      <div class="contact">
+        <p>Contact Information</p>
+        <img src="/icons/unchecked.png" />
+      </div>
+    </section>
+
+    <div class="container">
+      <h1>Complete Your Payment</h1>
+      <div class="event-details">
+        <p id="eventAmount"></p>
+      </div>
+
+      <!-- Ticket selection page -->
+      <section id="ticket-page" class="ticket-page">
+        <section id="ticket-selector"></section>
+        <section id="summary">
+          <!-- Summary on ticket selection page -->
+        </section>
       </section>
+
+      <!-- Payment page with form + summary side-by-side -->
+      <div class="payment-page hidden" id="paymentPage">
+        <div class="payment-form">
+          <form id="paymentForm">
+            <div class="formEntry">
+              <label for="Fname">Your First Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="Fname"
+                required
+                placeholder="Enter your First Name"
+              />
+
+              <label for="Lname">Your Last Name:</label>
+              <input
+                type="text"
+                id="Lname"
+                name="Lname"
+                required
+                placeholder="Enter your Last Name"
+              />
+            </div>
+
+            <div class="formEntry">
+              <label for="email">Your Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div class="formEntry">
+              <label for="confirmEmail">Confirm Email Address:</label>
+              <input
+                type="email"
+                id="confirmEmail"
+                name="confirmEmail"
+                required
+                placeholder="Confirm Email address"
+              />
+            </div>
+
+            <div class="formEntry">
+              <label class="checkbox">
+                <input type="checkbox" id="buyForFriend" />
+                Buy for a Friend
+              </label>
+            </div>
+
+            <div id="friendEmailContainer" class="hidden">
+              <label for="friendEmail">Friend's Email:</label>
+              <input
+                type="email"
+                id="friendEmail"
+                placeholder="Enter friend's email"
+              />
+            </div>
+
+            <input type="hidden" id="eventId" name="eventId" />
+
+            <button type="submit">Proceed to Payment</button>
+          </form>
+        </div>
+
+        <section id="summary" class="payment-summary">
+          <!-- Summary on payment page -->
+        </section>
+      </div>
+
+      <button id="next-button">Next</button>
+      <button id="previous-button" class="hidden">Previous</button>
     </div>
 
-    <button id="next-button">Next</button>
-    <button id="previous-button" class="hidden">Previous</button>
-  </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get("id");
+        console.log("Extracted event ID:", eventId);
 
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const eventId = urlParams.get("id");
-      console.log("Extracted event ID:", eventId);
-
-      if (!eventId) {
-        alert("No event selected. Please go back and select an event.");
-        return;
-      }
-
-      try {
-        const eventRes = await fetch(`http://localhost:3000/api/event/${eventId}`);
-        if (!eventRes.ok) {
-          alert("Failed to load event details.");
+        if (!eventId) {
+          alert("No event selected. Please go back and select an event.");
           return;
-        }
-
-        const eventData = await eventRes.json();
-
-        document.getElementById("eventId").value = eventData.id;
-
-        fetch(`http://localhost:3000/api/ticket/getTicketType/${eventId}`)
-          .then((response) => response.json())
-          .then((result) => {
-            const ticketTypes = result.data;
-            const ticketSelector = document.getElementById("ticket-selector");
-            const summaryTicketPage = document.querySelector(
-              "#ticket-page #summary"
-            );
-            const summaryPaymentPage = document.querySelector(
-              "#paymentPage #summary"
-            );
-
-            ticketSelector.innerHTML = ""; // clear any previous
-
-            ticketTypes.forEach((ticketType) => {
-              const Type = document.createElement("div");
-              Type.innerHTML = `
-              <div class="ticket-container">
-                <div class="ticket-chooser">
-                  <h1>${ticketType.type_name}</h1>
-                  <input
-                    type="number"
-                    name="quantity"
-                    min="0"
-                    value="0"
-                    data-price="${ticketType.price}"
-                    data-name="${ticketType.type_name}"
-                    data-id="${ticketType.id}"
-                    required
-                  />
-                </div>
-                <h3>NGN${ticketType.price}</h3>
-              </div>
-            `;
-              ticketSelector.appendChild(Type);
-            });
-
-            const inputs = document.querySelectorAll('input[type="number"]');
-
-            function updateSummary() {
-              // Clear both summaries and add title
-              summaryTicketPage.innerHTML = "<h1>Summary</h1>";
-              summaryPaymentPage.innerHTML = "<h1>Summary</h1>";
-
-              let grandTotal = 0;
-
-              inputs.forEach((input) => {
-                const quantity = parseInt(input.value || 0);
-                const name = input.dataset.name;
-                const price = parseFloat(input.dataset.price);
-
-                if (quantity > 0) {
-                  const total = quantity * price;
-
-                  grandTotal += total;
-
-                  const lineHTML = `<p><strong>${name}</strong> × ${quantity} <span> NGN ${total.toLocaleString()}</span></p>`;
-
-                  // Add to both summaries
-                  summaryTicketPage.insertAdjacentHTML("beforeend", lineHTML);
-                  summaryPaymentPage.insertAdjacentHTML("beforeend", lineHTML);
-                }
-              });
-
-              if (grandTotal > 0) {
-                const fee = Math.floor(0.04 * grandTotal);
-                const finalAmount = grandTotal + fee;
-
-                const totalLineHTML = `
-                  <p>Fee<span> NGN${fee.toLocaleString()}</span></p>
-                  <p><strong>Total (incl. fees):<span> NGN ${finalAmount.toLocaleString()}</span></strong></p>
-                `;
-
-                summaryTicketPage.insertAdjacentHTML("beforeend", totalLineHTML);
-                summaryPaymentPage.insertAdjacentHTML("beforeend", totalLineHTML);
-              }
-            }
-
-            inputs.forEach((input) => {
-              input.addEventListener("input", updateSummary);
-            });
-
-            updateSummary();
-          })
-          .catch((error) => {
-            console.error("Error fetching ticket types:", error);
-          });
-      } catch (err) {
-        console.error("Error fetching event details:", err);
-        alert("An error occurred while loading the event.");
-      }
-    });
-
-    // Show/Hide Friend Email
-    const buyForFriendCheckbox = document.getElementById("buyForFriend");
-    const friendEmailContainer = document.getElementById("friendEmailContainer");
-
-    buyForFriendCheckbox.addEventListener("change", () => {
-      if (buyForFriendCheckbox.checked) {
-        friendEmailContainer.classList.remove("hidden");
-      } else {
-        friendEmailContainer.classList.add("hidden");
-      }
-    });
-
-    document.getElementById("next-button").addEventListener("click", (e) => {
-      e.preventDefault();
-
-      document.getElementById("ticket-page").style.display = "none";
-      document.getElementById("paymentPage").classList.remove("hidden");
-
-      document.getElementById("next-button").classList.add("hidden");
-      document.getElementById("previous-button").classList.remove("hidden");
-    });
-
-    document.getElementById("previous-button").addEventListener("click", () => {
-      document.getElementById("ticket-page").style.display = "flex";
-      document.getElementById("paymentPage").classList.add("hidden");
-
-      document.getElementById("next-button").classList.remove("hidden");
-      document.getElementById("previous-button").classList.add("hidden");
-    });
-
-    document
-      .getElementById("paymentForm")
-      .addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById("email").value;
-        const eventId = document.getElementById("eventId").value;
-        const buyingForFriend = buyForFriendCheckbox.checked;
-        const friendEmail = document.getElementById("friendEmail").value;
-        const token = sessionStorage.getItem("token");
-        let userId = null;
-
-        const confirmEmail = document.getElementById("confirmEmail").value;
-        if (email !== confirmEmail) {
-          alert("Email addresses do not match.");
-          return;
-        }
-
-        if (token) {
-          try {
-            const decodedToken = jwt_decode(token);
-            userId = decodedToken.user_id || decodedToken.id || null;
-          } catch (err) {
-            console.error("Error decoding token:", err);
-          }
-        }
-
-        if (!email || !eventId || !userId) {
-          alert("Please fill all fields and ensure you are logged in.");
-          window.location.href = "../index.html";
-          return;
-        }
-
-        // Collect all selected tickets
-        const inputs = document.querySelectorAll('input[name="quantity"]');
-        let selectedTickets = [];
-
-        inputs.forEach((input) => {
-          const quantity = parseInt(input.value || 0);
-          const ticketTypeId = input.dataset.id;
-
-          if (quantity > 0) {
-            selectedTickets.push({
-              ticket_type_id: ticketTypeId,
-              quantity,
-            });
-          }
-        });
-
-        if (selectedTickets.length === 0) {
-          alert("Please select at least one ticket.");
-          return;
-        }
-
-        let payload = {
-          email,
-          event_id: eventId,
-          user_id: userId,
-          tickets: selectedTickets,
-        };
-
-        if (buyingForFriend) {
-          if (!friendEmail) {
-            alert("Please enter your friend's email.");
-            return;
-          }
-          payload.friend_email = friendEmail;
         }
 
         try {
-          const paymentRes = await fetch(
-            "http://localhost:3000/api/payment/initialize",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            }
-          );
-
-          const paymentData = await paymentRes.json();
-          console.log("Payment API response:", paymentData);
-
-          if (
-            paymentData.status &&
-            paymentData.data &&
-            paymentData.data.authorization_url
-          ) {
-            window.location.href = paymentData.data.authorization_url;
-          } else {
-            alert("Failed to initialize payment. Please try again.");
+          const eventRes = await fetch(`http://localhost:3000/api/event/${eventId}`);
+          if (!eventRes.ok) {
+            alert("Failed to load event details.");
+            return;
           }
+
+          const eventData = await eventRes.json();
+
+          document.getElementById("eventId").value = eventData.id;
+
+          fetch(`http://localhost:3000/api/ticket/getTicketType/${eventId}`)
+            .then((response) => response.json())
+            .then((result) => {
+  const ticketTypes = result.data;
+  const ticketSelector = document.getElementById("ticket-selector");
+  const summaryTicketPage = document.querySelector("#ticket-page #summary");
+  const summaryPaymentPage = document.querySelector("#paymentPage #summary");
+
+  ticketSelector.innerHTML = ""; // Clear previous
+
+  // 1️⃣ Render ticket inputs
+  ticketTypes.forEach((ticketType) => {
+    console.log("TicketType:", ticketType);
+  
+    const price = parseFloat(ticketType.price);
+  const available = parseInt(ticketType.available_tickets);
+console.log(`${ticketType.type_name} - available:`, available); // <- Add this
+const isSoldOut = available <= 0; // safer condition
+
+
+
+    const container = document.createElement("div");
+    container.className = "ticket-container";
+
+    const chooser = document.createElement("div");
+    chooser.className = "ticket-chooser";
+
+    const nameHeading = document.createElement("h1");
+    nameHeading.textContent = ticketType.type_name;
+    chooser.appendChild(nameHeading);
+
+    if (isSoldOut) {
+  const soldOutLabel = document.createElement("p");
+  soldOutLabel.className = "sold-out-label";
+  soldOutLabel.textContent = "Sold Out";
+  chooser.appendChild(soldOutLabel);
+} else {
+  const input = document.createElement("input");
+  input.type = "number";
+  input.name = "quantity";
+  input.min = "0";
+  input.value = "0";
+  input.setAttribute("data-price", price);
+  input.setAttribute("data-name", ticketType.type_name);
+  input.setAttribute("data-id", ticketType.id);
+  input.setAttribute("data-available", available);
+  chooser.appendChild(input);
+}
+
+
+    const priceTag = document.createElement("h3");
+    priceTag.textContent = `NGN${price}`;
+
+    container.appendChild(chooser);
+    container.appendChild(priceTag);
+    ticketSelector.appendChild(container);
+  });
+
+  // 2️⃣ Now that all inputs are added, select them
+  const inputs = document.querySelectorAll('input[type="number"]');
+
+  // 3️⃣ Define summary update function
+  function updateSummary() {
+    summaryTicketPage.innerHTML = "<h1>Summary</h1>";
+    summaryPaymentPage.innerHTML = "<h1>Summary</h1>";
+
+    let grandTotal = 0;
+
+    inputs.forEach((input) => {
+      const quantity = parseInt(input.value || 0);
+      const available = parseInt(input.dataset.available);
+      const name = input.dataset.name;
+      const price = parseFloat(input.dataset.price);
+
+      if (quantity > available) {
+        alert(`You cannot select more than ${available} tickets for ${name}`);
+        input.value = 0;
+        return;
+      }
+
+      if (quantity > 0) {
+        const total = quantity * price;
+        grandTotal += total;
+
+        const lineHTML = `<p><strong>${name}</strong> × ${quantity} <span> NGN ${total.toLocaleString()}</span></p>`;
+        summaryTicketPage.insertAdjacentHTML("beforeend", lineHTML);
+        summaryPaymentPage.insertAdjacentHTML("beforeend", lineHTML);
+      }
+    });
+
+    if (grandTotal > 0) {
+      const fee = Math.floor(0.04 * grandTotal);
+      const finalAmount = grandTotal + fee;
+
+      const totalLineHTML = `
+        <p>Fee<span> NGN${fee.toLocaleString()}</span></p>
+        <p><strong>Total (incl. fees):<span> NGN ${finalAmount.toLocaleString()}</span></strong></p>
+      `;
+
+      summaryTicketPage.insertAdjacentHTML("beforeend", totalLineHTML);
+      summaryPaymentPage.insertAdjacentHTML("beforeend", totalLineHTML);
+    }
+  }
+
+  // 4️⃣ Attach listeners to ticket inputs
+  inputs.forEach((input) => {
+    input.addEventListener("input", updateSummary);
+  });
+
+  // 5️⃣ Initialize the summary
+  updateSummary();
+})
+.catch((error) => {
+              console.error("Error fetching ticket types:", error);
+            });
         } catch (err) {
-          console.error("Error initializing payment:", err);
-          alert("Something went wrong while initializing payment.");
+          console.error("Error fetching event details:", err);
+          alert("An error occurred while loading the event.");
         }
       });
-  </script>
-</body>
-</html>
+
+      // Show/Hide Friend Email
+      const buyForFriendCheckbox = document.getElementById("buyForFriend");
+      const friendEmailContainer = document.getElementById("friendEmailContainer");
+
+      buyForFriendCheckbox.addEventListener("change", () => {
+        if (buyForFriendCheckbox.checked) {
+          friendEmailContainer.classList.remove("hidden");
+        } else {
+          friendEmailContainer.classList.add("hidden");
+        }
+      });
+
+      document.getElementById("next-button").addEventListener("click", (e) => {
+        e.preventDefault();
+
+        document.getElementById("ticket-page").style.display = "none";
+        document.getElementById("paymentPage").classList.remove("hidden");
+
+        document.getElementById("next-button").classList.add("hidden");
+        document.getElementById("previous-button").classList.remove("hidden");
+      });
+
+      document.getElementById("previous-button").addEventListener("click", () => {
+        document.getElementById("ticket-page").style.display = "flex";
+        document.getElementById("paymentPage").classList.add("hidden");
+
+        document.getElementById("next-button").classList.remove("hidden");
+        document.getElementById("previous-button").classList.add("hidden");
+      });
+
+  document.getElementById("paymentForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const confirmEmail = document.getElementById("confirmEmail").value;
+    const eventId = document.getElementById("eventId").value;
+    const buyingForFriend = buyForFriendCheckbox.checked;
+    const friendEmail = document.getElementById("friendEmail").value;
+    const token = sessionStorage.getItem("token");
+    let userId = null;
+
+    if (email !== confirmEmail) {
+      alert("Email addresses do not match.");
+      return;
+    }
+
+    if (!email || !eventId) {
+      alert("Please fill all fields and ensure you are logged in.");
+      window.location.href = "../index.html";
+      return;
+    }
+
+    if (token) {
+      try {
+        const decodedToken = jwt_decode(token);
+        userId = decodedToken.user_id || decodedToken.id || null;
+      } catch (err) {
+        console.error("Error decoding token:", err);
+      }
+    }
+
+    // Collect all selected tickets
+    const inputs = document.querySelectorAll('input[name="quantity"]');
+    let selectedTickets = [];
+    
+
+    inputs.forEach((input) => {
+      const quantity = parseInt(input.value || 0);
+      const available = parseInt(input.dataset.available);
+      const ticketTypeId = input.dataset.id;
+      const name = input.dataset.name;
+
+    
+
+      if (quantity > 0) {
+        selectedTickets.push({ ticket_type_id: ticketTypeId, quantity });
+      }
+    });
+
+
+
+    if (selectedTickets.length === 0) {
+      alert("Please select at least one ticket.");
+      return;
+    }
+
+    let payload = {
+      name,
+      email,
+      event_id: eventId,
+      user_id: userId,
+      tickets: selectedTickets,
+    };
+
+    if (buyingForFriend) {
+      if (!friendEmail) {
+        alert("Please enter your friend's email.");
+        return;
+      }
+      payload.friend_email = friendEmail;
+    }
+
+    try {
+      const paymentRes = await fetch("http://localhost:3000/api/payment/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const paymentData = await paymentRes.json();
+      console.log("Payment API response:", paymentData);
+
+      if (paymentData.status && paymentData.data && paymentData.data.authorization_url) {
+        window.location.href = paymentData.data.authorization_url;
+      } else {
+        alert("Failed to initialize payment. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error initializing payment:", err);
+      alert("Something went wrong while initializing payment.");
+    }
+  });
+
+    </script>
+  </body>
+  </html>

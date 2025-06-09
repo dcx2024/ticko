@@ -197,6 +197,11 @@ span {
     display: flex;
     flex-direction: column;
 }
+.sold-out-label {
+  color: red;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
 
 /* Responsive Enhancements Only */
 @media screen and (max-width: 768px) {

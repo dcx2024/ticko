@@ -81,7 +81,7 @@
                     <label for="ticketAvailability1">Available Tickets:</label><br>
                     <input type="number" id="ticketAvailability1" name="ticketAvailability[]" required placeholder="Availability"><br><br>
 
-
+<button type="button" class="add-ticket-btn" onclick="addTicketForm()">Add Type</button>
                     <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm1')">Remove Ticket Type</button>
                 </div>
             </div>
@@ -200,7 +200,7 @@ function switchTab(tab) {
 
                 <label for="ticketAvailability${ticketCount}">Available Tickets:</label><br>
                 <input type="number" id="ticketAvailability${ticketCount}" name="ticketAvailability[]" required placeholder="Availability"><br><br>
-
+<button type="button" class="add-ticket-btn" onclick="addTicketForm()">Add Type</button>
                 <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm${ticketCount}')">Remove Ticket Type</button>
             `;
 
@@ -240,8 +240,7 @@ const rawEnd = document.getElementById('end-time').value;
 const start_time = toLagosISOString(rawStart);
 const end_time = toLagosISOString(rawEnd);
 
-formData.append('start_time', start_time);
-formData.append('end_time', end_time);
+
 
     
 
@@ -262,6 +261,8 @@ formData.append('end_time', end_time);
     formData.append('image', eventImage);
     formData.append('location', eventLocation);
     formData.append('status', eventStatus);
+    formData.append('start_time', start_time);
+formData.append('end_time', end_time);
     
 const businessName = document.getElementById('businessName').value;
 const account_number = document.getElementById('accountNumber').value;

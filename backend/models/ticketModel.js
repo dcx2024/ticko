@@ -45,28 +45,42 @@ const createPDF = (data, filePath) => {
     });
 };
 
-const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => {
+const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1,guestDetails = null) => {
   const createdTickets = [];
   try {
     // 1. Fetch event, user, ticket type info (including admin email)
-    const [eventRes, userRes, typeRes] = await Promise.all([
+    const [eventRes, typeRes] = await Promise.all([
       db.query('SELECT name, admin_email FROM events WHERE id = $1', [event_id]),
-      db.query('SELECT name, email FROM users WHERE id = $1', [user_id]),
+
       db.query('SELECT type_name, price, available_tickets FROM ticket_types WHERE id = $1', [ticket_type_id]),
     ]);
 
-    if (!eventRes.rows.length || !userRes.rows.length || !typeRes.rows.length) {
+    if (!eventRes.rows.length  || !typeRes.rows.length) {
       throw new Error('Invalid event, user or ticket type');
     }
+let userName, email;
+   if (user_id) {
+    const userRes = await db.query('SELECT name, email FROM users WHERE id = $1', [user_id]);
+    if (!userRes.rows.length) throw new Error('user not found');
+    userName = userRes.rows[0].name;
+    email = userRes.rows[0].email;
+} else if (guestDetails && guestDetails.name && guestDetails.email) {
+    userName = guestDetails.name;
+    email = guestDetails.email;
+} else {
+    throw new Error('No user or Guest details provided');
+}
+
+
+
 
     const event_name = eventRes.rows[0].name;
     const admin_email = eventRes.rows[0].admin_email;
-    const userName = userRes.rows[0].name;
-    const email = userRes.rows[0].email;
+    
     const { type_name: typeName, price, available_tickets } = typeRes.rows[0];
 
     // 2. Check if enough tickets available
-    if (available_tickets < quantity) {
+    if (available_tickets <= 0) {
       // Notify admin sold out or low tickets
       await emailQueue.add({
         AdminMailOptions: {
@@ -108,11 +122,12 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
 
       await createPDF({ event_name, name: userName, email, typeName, price, payload, qr_code_data }, filePath);
 
-      const { rows } = await db.query(
-        `INSERT INTO tickets (event_id, user_id, ticket_type_id, qr_code, is_valid)
-         VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [event_id, user_id, ticket_type_id, qr_code_data, true]
-      );
+      const { rows } =await db.query(
+  `INSERT INTO tickets (event_id, user_id, ticket_type_id, qr_code, is_valid, guest_name, guest_email)
+   VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+  [event_id, user_id, ticket_type_id, qr_code_data, true, user_id ? null : userName, user_id ? null : email]
+);
+
 
       createdTickets.push(rows[0]);
 
@@ -146,124 +161,145 @@ const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1) => 
 };
 
 
-const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_email) => {
-    try {
-        // First, get available tickets + admin email
-        const [ticketTypeRes, eventRes] = await Promise.all([
-            db.query('SELECT available_tickets FROM ticket_types WHERE id = $1', [ticket_type_id]),
-            db.query('SELECT admin_email, name FROM events WHERE id = $1', [event_id])
-        ]);
+const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_email, guestDetails = null) => {
+  try {
+    // Get ticket type availability and event info
+    const [ticketTypeRes, eventRes] = await Promise.all([
+      db.query('SELECT available_tickets FROM ticket_types WHERE id = $1', [ticket_type_id]),
+      db.query('SELECT admin_email, name FROM events WHERE id = $1', [event_id])
+    ]);
 
-        if (!ticketTypeRes.rows.length || !eventRes.rows.length) {
-            throw new Error('Invalid ticket type or event ID');
-        }
-
-        const availableTickets = ticketTypeRes.rows[0].available_tickets;
-        const admin_email = eventRes.rows[0].admin_email;
-        const event_name = eventRes.rows[0].name;
-
-        // If no tickets, notify admin and return error
-        if (availableTickets <= 0) {
-            await emailQueue.add({
-                AdminMailOptions: {
-                    from: process.env.GMAIL_USER,
-                    to: admin_email,
-                    subject: 'Tickets Sold Out',
-                    html: `<p>Tickets for event <strong>${event_name}</strong> are sold out.</p>
-                           <p>Please login to restock.</p>`
-                }
-            });
-
-            return { status: 'error', message: 'Sorry, tickets are sold out.' };
-        }
-
-        // Atomically decrement available_tickets
-        const { rows: updatedRows } = await db.query(
-            `UPDATE ticket_types SET available_tickets = available_tickets - 1 
-             WHERE id = $1 AND available_tickets > 0 
-             RETURNING available_tickets`,
-            [ticket_type_id]
-        );
-
-        if (!updatedRows.length) {
-            // If decrement failed, tickets are sold out — notify admin
-            await emailQueue.add({
-  AdminMailOptions: {
-    from: process.env.GMAIL_USER,
-    to: admin_email,
-    subject: 'Tickets Sold Out',
-    html: `<p>Tickets for event <strong>${event_name}</strong> are sold out.</p>
-           <p>Please log in to restock tickets.</p>`
-  }
-});
-
-console.log(`Added admin email job to queue for ${admin_email}`);
-
-            return { status: 'error', message: 'Sorry, tickets are sold out.' };
-        }
-
-        // Fetch ticket info
-        const [eventInfoRes, buyerRes, typeRes] = await Promise.all([
-            db.query('SELECT name FROM events WHERE id = $1', [event_id]),
-            db.query('SELECT name FROM users WHERE id = $1', [user_id]),
-            db.query('SELECT type_name, price FROM ticket_types WHERE id = $1', [ticket_type_id]),
-        ]);
-
-        if (!eventInfoRes.rows.length || !buyerRes.rows.length || !typeRes.rows.length) {
-            throw new Error('Invalid event, user, or ticket type ID');
-        }
-
-        const event_name_final = eventInfoRes.rows[0].name;
-        const buyerName = buyerRes.rows[0].name;
-        const { type_name: typeName, price } = typeRes.rows[0];
-
-        const timestamp = Date.now();
-        const payload = `${event_id}-${event_name_final}--${typeName}--${timestamp}`;
-        const qr_code_data = await QRCode.toDataURL(payload);
-        const filePath = path.join(ticketsDir, `ticket_friend_${user_id}_${timestamp}.pdf`);
-
-        await createPDF({
-            event_name: event_name_final,
-            name: buyerName,
-            email: friend_email,
-            typeName,
-            price,
-            payload,
-            qr_code_data,
-            isFriend: true
-        }, filePath);
-
-        const { rows } = await db.query(
-            `INSERT INTO tickets (event_id, user_id, ticket_type_id, qr_code, is_valid, guest_email) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [event_id, user_id, ticket_type_id, qr_code_data, true, friend_email]
-        );
-
-        await emailQueue.add({
-            mailOptions: {
-                from: process.env.GMAIL_USER,
-                to: friend_email,
-                subject: `Your Ticket for ${event_name_final}`,
-                html: `<p>You received a <strong>${typeName}</strong> ticket for <strong>${event_name_final}</strong>!</p>`,
-                attachments: [{
-                    filename: `ticket-${event_name_final}-${typeName}.pdf`,
-                    content: fs.readFileSync(filePath).toString('base64'),
-                    encoding: 'base64'
-                }]
-            }
-        });
-
-        fs.unlink(filePath, err => {
-            if (err) console.error('Error deleting ticket file:', err);
-        });
-
-        return rows[0];
-
-    } catch (error) {
-        console.error('Error generating ticket for friend:', error.message || error);
-        throw error;
+    if (!ticketTypeRes.rows.length || !eventRes.rows.length) {
+      throw new Error('Invalid ticket type or event ID');
     }
+
+    const availableTickets = ticketTypeRes.rows[0].available_tickets;
+    const admin_email = eventRes.rows[0].admin_email;
+    const event_name = eventRes.rows[0].name;
+
+    if (availableTickets <= 0) {
+      // Notify admin sold out
+      await emailQueue.add({
+        AdminMailOptions: {
+          from: process.env.GMAIL_USER,
+          to: admin_email,
+          subject: 'Tickets Sold Out',
+          html: `<p>Tickets for event <strong>${event_name}</strong> are sold out.</p><p>Please login to restock.</p>`
+        }
+      });
+      return { status: 'error', message: 'Sorry, tickets are sold out.' };
+    }
+
+    // Atomically decrement available tickets
+    const { rows: updatedRows } = await db.query(
+      `UPDATE ticket_types SET available_tickets = available_tickets - 1 
+       WHERE id = $1 AND available_tickets > 0 
+       RETURNING available_tickets`,
+      [ticket_type_id]
+    );
+
+    if (!updatedRows.length) {
+      await emailQueue.add({
+        AdminMailOptions: {
+          from: process.env.GMAIL_USER,
+          to: admin_email,
+          subject: 'Tickets Sold Out',
+          html: `<p>Tickets for event <strong>${event_name}</strong> are sold out.</p><p>Please log in to restock tickets.</p>`
+        }
+      });
+      return { status: 'error', message: 'Sorry, tickets are sold out.' };
+    }
+
+    // Fetch event and ticket type info (no need to fetch user if guest)
+    const [eventInfoRes, typeRes] = await Promise.all([
+      db.query('SELECT name FROM events WHERE id = $1', [event_id]),
+      db.query('SELECT type_name, price FROM ticket_types WHERE id = $1', [ticket_type_id])
+    ]);
+
+    if (!eventInfoRes.rows.length || !typeRes.rows.length) {
+      throw new Error('Invalid event or ticket type ID');
+    }
+
+    const event_name_final = eventInfoRes.rows[0].name;
+    const { type_name: typeName, price } = typeRes.rows[0];
+
+    // Determine buyer name and email (handle guest or registered user)
+    let buyerName, buyerEmail;
+
+    if (user_id) {
+      // Registered user - fetch name and email
+      const userRes = await db.query('SELECT name, email FROM users WHERE id = $1', [user_id]);
+      if (!userRes.rows.length) {
+        throw new Error('User not found');
+      }
+      buyerName = userRes.rows[0].name;
+      buyerEmail = userRes.rows[0].email;
+    } else if (guestDetails && guestDetails.name && guestDetails.email) {
+      buyerName = guestDetails.name;
+      buyerEmail = guestDetails.email;
+    } else {
+      throw new Error('No user or guest details provided');
+    }
+
+    const timestamp = Date.now();
+    const payload = `${event_id}-${event_name_final}--${typeName}--${timestamp}`;
+    const qr_code_data = await QRCode.toDataURL(payload);
+    const filePath = path.join(ticketsDir, `ticket_friend_${user_id || 'guest'}_${timestamp}.pdf`);
+
+    await createPDF({
+      event_name: event_name_final,
+      name: buyerName,
+      email: friend_email,
+      typeName,
+      price,
+      payload,
+      qr_code_data,
+      isFriend: true
+    }, filePath);
+
+    // Insert ticket into DB
+    const { rows } = await db.query(
+      `INSERT INTO tickets (event_id, user_id, ticket_type_id, qr_code, is_valid, guest_email, guest_name)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [
+        event_id,
+        user_id || null,
+        ticket_type_id,
+        qr_code_data,
+        true,
+        friend_email,
+        user_id ? null : buyerName
+      ]
+    );
+
+    // Send email with ticket attached
+    await emailQueue.add({
+      mailOptions: {
+        from: process.env.GMAIL_USER,
+        to: friend_email,
+        subject: `Your Ticket for ${event_name_final}`,
+        html: `<p>You received a <strong>${typeName}</strong> ticket for <strong>${event_name_final}</strong>!</p>`,
+        attachments: [{
+          filename: `ticket-${event_name_final}-${typeName}.pdf`,
+          content: fs.readFileSync(filePath).toString('base64'),
+          encoding: 'base64'
+        }]
+      }
+    });
+
+    // Clean up PDF file
+    fs.unlink(filePath, err => {
+      if (err) console.error('Error deleting ticket file:', err);
+    });
+
+    return rows[0];
+
+  } catch (error) {
+    console.error('Error generating ticket for friend:', error.message || error);
+    throw error;
+  }
 };
+
 
 const scanTicket = async (req, res) => {
     try {

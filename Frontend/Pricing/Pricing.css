@@ -216,7 +216,7 @@ li:hover{
         box-shadow: none; /* Prevent overlap */
     }
     .Pricing{
-        border: 1px solid #ccc;
+        border: 1px solid #00ffff;
         padding: 30px;
         height: auto;
         border-radius: 20px;

@@ -317,7 +317,7 @@ left: 15px
 }
 #FAQ_container h1{
   font-size: 40px;
-
+  text-align: center;
 }
 details{
   border: 1px solid #ccc;

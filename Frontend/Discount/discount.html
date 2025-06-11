@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discount Popup</title>
+    <link rel="stylesheet" href="discount.css">
+    
+</head>
+<body>
+        <button id="PopupTrigger" onclick="OpenPopup()">Add Discount</button>
+    <div id="overlay">
+        <div id="PopupContainer">
+            <span id="CloseButton"><img src="CloseIcon.svg" alt="" id="CloseIcon"></span>
+    
+            <div id="FormLeft">
+                
+                <form action="" id="DiscountForm">
+                    <h1 id="AddDiscount">Create Discount Code</h1>
+                    <p >What's the discount type ?</p>
+    
+                    <select name="DiscountType" id="DiscountType" required>
+                        <option value="Percentage">Percentage</option>
+                        <option value="Naira">Naira</option>
+                    </select><br>
+    
+                    <input type="text" placeholder="Your Discount Code" id="DiscountCode" class="DiscountCode">
+    
+                    <input type="number" class="MaxTickets" id="MaxTickets" placeholder="Max Tickets"><br>
+    
+                    <input type="number" class="DiscountAmount" id="DiscountAmount" placeholder="How Much Discount"/><br>
+    
+                    <p for="DiscountValidity">Valid Until:</p>
+                    
+                        <input type="datetime" id="DiscountValidityStart"required placeholder="Start" class="line">
+    
+                    
+                        <input type="datetime" id="DiscountValidityEnd" required placeholder="End" class="line">
+    
+                    <div id="ErrorMsg"></div>
+    
+                    <Button type="submit" id="Submit">Submit</Button>
+    
+                    
+                </form>
+            </div>
+            
+            <div id="formright">
+                <img src="DiscountAbstract.svg" alt="" id="DiscountImg">
+            </div>
+        </div>
+    </div>
+    
+    <br>
+
+
+
+
+</body>
+
+<script>
+    // closebutton
+    let CloseButton= document.getElementById("CloseButton")
+    let PopUp=document.getElementById("PopupContainer")
+    
+
+
+    CloseButton = document.getElementById("CloseButton").addEventListener("click",() =>{
+        PopUp.style.display= "none"
+    });
+
+    function OpenPopup(){
+        PopUp.style.display= "block"
+    }
+    
+    const TicketPrice = 5000; //integrate with database to get value for backend
+    const EventDate = '2025-29-03';
+    const TicketQuantity= 1000;
+    const ErrorMsg= document.getElementById("ErrorMsg");
+    
+
+    document.getElementById("DiscountForm").addEventListener('submit', async function(e){
+        e.preventDefault();
+        const DiscountType= String(document.getElementById("DiscountType").value)
+        const DiscountCode= String(document.getElementById("DiscountCode").value)
+        const MaxTickets= Number(document.getElementById("MaxTickets").value)
+        const DiscountAmount = Number(document.getElementById("DiscountAmount").value)
+        const DiscountValidityStart = document.getElementById("DiscountValidityStart").value
+        const DiscountValidityEnd = document.getElementById("DiscountValidityEnd").value
+
+        if (DiscountType === "Percentage" && DiscountAmount > 100){
+            ErrorMsg.textContent = "Percentage Discount cannot exceed 100%";
+            return;
+        }
+        if(DiscountType === "Naira" && DiscountAmount > TicketPrice){
+            ErrorMsg.textContent = 'naira discount cannot eexceed ${TicketPrice}';
+            return;
+        }
+        if(DiscountValidityEnd > EventEndDate){
+            ErrorMsg.textContent = "Discount Validity cannot exceed event date";
+            return;
+        }
+        if( MaxTickets > TicketQuantity){
+            ErrorMsg.textContent = "Max Tickets cannot exceed ${TicketQuantity}"
+            return
+        }
+
+        //if all conditions are met
+        alert("Discount was succesfully added");
+        DiscountForm.reset()
+    })
+
+    
+
+</script>
+</html>

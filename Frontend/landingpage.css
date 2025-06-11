@@ -331,13 +331,15 @@ details{
 }
 details li{
   font-weight: normal;
-  font-size: 17px;
+  font-size: 15px;
   font-family: sans-serif
+  padding: 10px;
 }
 details p{
   font-weight: normal;
-  font-size: 17px;
+  font-size: 15px;
   font-family: sans-serif
+  padding: 10px;
 }
 li{
   list-style: none;

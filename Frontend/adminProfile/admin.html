@@ -9,6 +9,17 @@
 </head>
 
 <body>
+  <button id="dashboardTab">Dashboard</button>
+  <button id="eventsTab">Events</button>
+  <button id="walletTab">Wallet</button>
+
+  <button id="contactTab">Contact</button>
+  <button id="settingsTab">Settings</button>
+  <button id="logout">Logout</button>
+
+
+
+
   <div class="admin-dashboard">
     <h1>Event Stats Dashboard</h1>
 
@@ -33,6 +44,46 @@
     </div>
 
   </div>
+
+<section id="event">
+
+<div class="stat-box">
+  <h3>Total Events</h3>
+  <div id="totalEvents"></div>
+</div>
+<div class="edit-event">
+
+  <!--There should be a form-->
+</div>
+
+
+  <div id="ticketForm" class="tab-content">
+        <h2>Ticket Details</h2>
+        <form id="ticketDetailsForm">
+            <div id="ticketTypesContainer">
+                <!-- Dynamic ticket forms will be added here -->
+                <div class="ticket-form-group" id="ticketForm1">
+                    <label for="ticketType1">Ticket Type:</label><br>
+                    <input type="text" id="ticketType1" name="ticketType[]" required placeholder="Ticket Type"><br><br>
+
+                    <label for="ticketPrice1">Ticket Price:</label><br>
+                    <input type="number" id="ticketPrice1" name="ticketPrice[]" required placeholder="Price"><br><br>
+
+                    <label for="ticketAvailability1">Available Tickets:</label><br>
+                    <input type="number" id="ticketAvailability1" name="ticketAvailability[]" required placeholder="Availability"><br><br>
+
+<button type="button" class="add-ticket-btn" onclick="addTicketForm()">Add Type</button>
+                    <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm1')">Remove Ticket Type</button>
+                </div>
+            </div>
+       <div class="form-navigation">
+    <button type="button" onclick="switchTab('event')">Previous</button>
+    <button type="button" onclick="switchTab('account')">Next</button>
+</div>
+        </form>
+        <a href="../events/event.html"></a>
+    </div>
+</section>
 
   <script>
     const token = sessionStorage.getItem('token');
@@ -112,6 +163,10 @@
     
   
     window.onload = init;
+
+    function switchTab(){
+      const dashboard=document.getElementById("dashboardTab")
+    }
   </script>
 
 

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Failed</title>
+    <link rel="icon" href="/images/logo-without-bg.png">
+    <style>
+        body{
+            background-color: rgb(238, 238, 238);
+        }
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 0px 76px 5px 75px;
+            background-color: transparent;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .nav {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+        nav a {
+            color: #4A90E2;
+            font-weight: 500;
+        }
+        /* Logo */
+        header img {
+            width: 80px;
+        }
+        /* Buttons */
+        .acctBtn {
+            display: flex;
+            gap: 10px;
+        }
+        .acctBtn button {
+            background-color: #4A90E2;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .acctBtn a {
+            color: white;
+        }
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            border-top: 1px solid #ddd;
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 999;
+        }
+        .mobile-bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #4A90E2;
+            text-decoration: none;
+        }
+        .mobile-bottom-nav a img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 3px;
+        }
+
+
+        #Container{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            text-align: center;
+            font-family: sans-serif;
+        }
+        h1{
+            font-size: 5vh;
+        }
+        p{
+            font-size: 3vh;
+            width: auto;
+
+        }
+        #ButtonContainer{
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: center;
+            }
+        button{
+            margin-right: 10px;
+            height: 40px;
+            width: 30%;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #0845a0;
+            border: 1px solid #00ffff;
+            font-size: 2vh;
+        }
+        button:hover{
+                color: white;
+                background-image: linear-gradient(145deg, #0066ff, #cc00ff);
+                border: none;
+                transition: 0.5s;  
+        }
+        #TransactionAnimation{
+            width: 65%; 
+        }
+        
+        @media only screen and (max-width: 425px){
+
+            header #LinkContainer{
+                display: none;
+            }
+        
+            header img{
+                position: absolute;
+                top: 0;
+                left: 15px
+            }
+            header {
+                background-color: transparent;
+                box-shadow: none; /* Prevent overlap */
+            }
+
+            #container{
+                width: 100%;
+                padding: 0px;
+                margin: 0px;
+                text-align: center;
+                font-family: sans-serif;
+            }
+            h1{
+                font-size: 20px;
+                text-align: center;
+                text-wrap: nowrap;
+
+                
+            }
+            p{
+                font-size: 90%;
+                text-wrap: wrap;
+                text-align: center;
+      
+            }
+            button{
+                margin: 4px;
+                height: 30px;
+                width: 50%;
+                padding: 8px;
+                border-radius: 10px;
+                font-weight: bold;
+                border: none;
+                font-size: 1.5vh;
+                color: #0845a0;
+                font-family: serif;
+                font-size: 10px;
+                text-wrap: nowrap;
+                border: 1px solid #00ffff;
+            } 
+            button:hover{
+                color: white;
+                background-image: linear-gradient(145deg, #0066ff, #cc00ff);
+                border: none;
+                transition: 0.5s;
+               
+            }
+            #ButtonContainer{
+                display: flex;
+                flex-wrap: nowrap;
+            }
+            #TransactionAnimation{
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/images/logo-wihtout bg.png" alt="Ticko Logo">
+    </header>
+
+
+   
+    <div id="Container">
+        <div>
+            <img src="../images/TransactionFailed.gif" alt="TransactionFailed" id="TransactionAnimation">
+        </div>
+
+        <h1>Transaction Failed!</h1>
+        <p>Ummm... That's not meant to happen. Something went wrong, but no big deal. <br>Give it another shot or reach out to our customer service(if you've been debited) and you'll soon be joining the vibes</p>
+
+        <div id="ButtonContainer">
+            <button onclick="window.location.href=''">Retry</button>
+            <button onclick="window.location.href=''">Customer Service</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -116,272 +116,237 @@
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const eventId = urlParams.get("id");
-        console.log("Extracted event ID:", eventId);
+document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventId = urlParams.get("id");
+  console.log("Extracted event ID:", eventId);
 
-        if (!eventId) {
-          alert("No event selected. Please go back and select an event.");
+  if (!eventId) {
+    alert("No event selected. Please go back and select an event.");
+    return;
+  }
+
+  try {
+    const eventRes = await fetch(`http://localhost:3000/api/event/${eventId}`);
+    if (!eventRes.ok) {
+      alert("Failed to load event details.");
+      return;
+    }
+
+    const eventData = await eventRes.json();
+    document.getElementById("eventId").value = eventData.id;
+
+    const response = await fetch(`http://localhost:3000/api/ticket/getTicketType/${eventId}`);
+    const result = await response.json();
+
+    const ticketTypes = result.data;
+    const ticketSelector = document.getElementById("ticket-selector");
+    const summaryTicketPage = document.querySelector("#ticket-page #summary");
+    const summaryPaymentPage = document.querySelector("#paymentPage #summary");
+
+    ticketSelector.innerHTML = ""; // Clear previous inputs
+
+    // Render ticket inputs
+    ticketTypes.forEach((ticketType) => {
+      const price = parseFloat(ticketType.price);
+      const available = parseInt(ticketType.available_tickets);
+      const isSoldOut = available <= 0;
+
+      const container = document.createElement("div");
+      container.className = "ticket-container";
+
+      const chooser = document.createElement("div");
+      chooser.className = "ticket-chooser";
+
+      const nameHeading = document.createElement("h1");
+      nameHeading.textContent = ticketType.type_name;
+      chooser.appendChild(nameHeading);
+
+      if (isSoldOut) {
+        const soldOutLabel = document.createElement("p");
+        soldOutLabel.className = "sold-out-label";
+        soldOutLabel.textContent = "Sold Out";
+        chooser.appendChild(soldOutLabel);
+      } else {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.name = "quantity";
+        input.min = "0";
+        input.value = "0";
+        input.setAttribute("data-price", price);
+        input.setAttribute("data-name", ticketType.type_name);
+        input.setAttribute("data-id", ticketType.id);
+        input.setAttribute("data-available", available);
+        chooser.appendChild(input);
+      }
+
+      const priceTag = document.createElement("h3");
+      priceTag.textContent = `NGN${price}`;
+
+      container.appendChild(chooser);
+      container.appendChild(priceTag);
+      ticketSelector.appendChild(container);
+    });
+
+    function updateSummary() {
+      summaryTicketPage.innerHTML = "<h1>Summary</h1>";
+      summaryPaymentPage.innerHTML = "<h1>Summary</h1>";
+      let grandTotal = 0;
+
+      const inputs = document.querySelectorAll('#ticket-selector input[name="quantity"]');
+
+      inputs.forEach((input) => {
+        const quantity = parseInt(input.value || 0);
+        const available = parseInt(input.dataset.available);
+        const name = input.dataset.name;
+        const price = parseFloat(input.dataset.price);
+
+        if (quantity > available) {
+          alert(`You cannot select more than ${available} tickets for ${name}`);
+          input.value = 0;
           return;
         }
 
-        try {
-          const eventRes = await fetch(`http://localhost:3000/api/event/${eventId}`);
-          if (!eventRes.ok) {
-            alert("Failed to load event details.");
-            return;
-          }
+        if (quantity > 0) {
+          const total = quantity * price;
+          grandTotal += total;
 
-          const eventData = await eventRes.json();
+          const lineHTML = `<p><strong>${name}</strong> × ${quantity} <span> NGN ${total.toLocaleString()}</span></p>`;
+          summaryTicketPage.insertAdjacentHTML("beforeend", lineHTML);
+          summaryPaymentPage.insertAdjacentHTML("beforeend", lineHTML);
+        }
+      });
 
-          document.getElementById("eventId").value = eventData.id;
+      if (grandTotal > 0) {
+        const fee = Math.floor(0.048 * grandTotal);
+        const finalAmount = grandTotal + fee;
 
-          fetch(`http://localhost:3000/api/ticket/getTicketType/${eventId}`)
-            .then((response) => response.json())
-            .then((result) => {
-  const ticketTypes = result.data;
-  const ticketSelector = document.getElementById("ticket-selector");
-  const summaryTicketPage = document.querySelector("#ticket-page #summary");
-  const summaryPaymentPage = document.querySelector("#paymentPage #summary");
+        const totalLineHTML = `
+          <p>Fee<span> NGN${fee.toLocaleString()}</span></p>
+          <p><strong>Total (incl. fees):<span> NGN ${finalAmount.toLocaleString()}</span></strong></p>
+        `;
 
-  ticketSelector.innerHTML = ""; // Clear previous
-
-  // 1️⃣ Render ticket inputs
-  ticketTypes.forEach((ticketType) => {
-    console.log("TicketType:", ticketType);
-  
-    const price = parseFloat(ticketType.price);
-  const available = parseInt(ticketType.available_tickets);
-console.log(`${ticketType.type_name} - available:`, available); // <- Add this
-const isSoldOut = available <= 0; // safer condition
-
-
-
-    const container = document.createElement("div");
-    container.className = "ticket-container";
-
-    const chooser = document.createElement("div");
-    chooser.className = "ticket-chooser";
-
-    const nameHeading = document.createElement("h1");
-    nameHeading.textContent = ticketType.type_name;
-    chooser.appendChild(nameHeading);
-
-    if (isSoldOut) {
-  const soldOutLabel = document.createElement("p");
-  soldOutLabel.className = "sold-out-label";
-  soldOutLabel.textContent = "Sold Out";
-  chooser.appendChild(soldOutLabel);
-} else {
-  const input = document.createElement("input");
-  input.type = "number";
-  input.name = "quantity";
-  input.min = "0";
-  input.value = "0";
-  input.setAttribute("data-price", price);
-  input.setAttribute("data-name", ticketType.type_name);
-  input.setAttribute("data-id", ticketType.id);
-  input.setAttribute("data-available", available);
-  chooser.appendChild(input);
-}
-
-
-    const priceTag = document.createElement("h3");
-    priceTag.textContent = `NGN${price}`;
-
-    container.appendChild(chooser);
-    container.appendChild(priceTag);
-    ticketSelector.appendChild(container);
-  });
-
-  // 2️⃣ Now that all inputs are added, select them
-  const inputs = document.querySelectorAll('input[type="number"]');
-
-  // 3️⃣ Define summary update function
-  function updateSummary() {
-    summaryTicketPage.innerHTML = "<h1>Summary</h1>";
-    summaryPaymentPage.innerHTML = "<h1>Summary</h1>";
-
-    let grandTotal = 0;
-
-    inputs.forEach((input) => {
-      const quantity = parseInt(input.value || 0);
-      const available = parseInt(input.dataset.available);
-      const name = input.dataset.name;
-      const price = parseFloat(input.dataset.price);
-
-      if (quantity > available) {
-        alert(`You cannot select more than ${available} tickets for ${name}`);
-        input.value = 0;
-        return;
+        summaryTicketPage.insertAdjacentHTML("beforeend", totalLineHTML);
+        summaryPaymentPage.insertAdjacentHTML("beforeend", totalLineHTML);
       }
+    }
 
-      if (quantity > 0) {
-        const total = quantity * price;
-        grandTotal += total;
-
-        const lineHTML = `<p><strong>${name}</strong> × ${quantity} <span> NGN ${total.toLocaleString()}</span></p>`;
-        summaryTicketPage.insertAdjacentHTML("beforeend", lineHTML);
-        summaryPaymentPage.insertAdjacentHTML("beforeend", lineHTML);
-      }
+    // Attach event listeners to inputs
+    document.querySelectorAll('#ticket-selector input[name="quantity"]').forEach((input) => {
+      input.addEventListener("input", updateSummary);
     });
 
-    if (grandTotal > 0) {
-      const fee = Math.floor(0.04 * grandTotal);
-      const finalAmount = grandTotal + fee;
+    // Initial summary
+    updateSummary();
 
-      const totalLineHTML = `
-        <p>Fee<span> NGN${fee.toLocaleString()}</span></p>
-        <p><strong>Total (incl. fees):<span> NGN ${finalAmount.toLocaleString()}</span></strong></p>
-      `;
+  } catch (err) {
+    console.error("Error loading event/tickets:", err);
+    alert("Something went wrong.");
+  }
+});
 
-      summaryTicketPage.insertAdjacentHTML("beforeend", totalLineHTML);
-      summaryPaymentPage.insertAdjacentHTML("beforeend", totalLineHTML);
+// Friend toggle
+document.getElementById("buyForFriend").addEventListener("change", () => {
+  const friendEmailContainer = document.getElementById("friendEmailContainer");
+  friendEmailContainer.classList.toggle("hidden");
+});
+
+// Navigation buttons
+document.getElementById("next-button").addEventListener("click", (e) => {
+  e.preventDefault();
+  document.getElementById("ticket-page").style.display = "none";
+  document.getElementById("paymentPage").classList.remove("hidden");
+  document.getElementById("next-button").classList.add("hidden");
+  document.getElementById("previous-button").classList.remove("hidden");
+});
+
+document.getElementById("previous-button").addEventListener("click", () => {
+  document.getElementById("ticket-page").style.display = "flex";
+  document.getElementById("paymentPage").classList.add("hidden");
+  document.getElementById("next-button").classList.remove("hidden");
+  document.getElementById("previous-button").classList.add("hidden");
+});
+
+// Form submission
+document.getElementById("paymentForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const confirmEmail = document.getElementById("confirmEmail").value;
+  const eventId = document.getElementById("eventId").value;
+  const friendEmail = document.getElementById("friendEmail").value;
+  const buyingForFriend = document.getElementById("buyForFriend").checked;
+  const token = sessionStorage.getItem("token");
+
+  if (email !== confirmEmail) {
+    alert("Email addresses do not match.");
+    return;
+  }
+
+  let userId = null;
+  if (token) {
+    try {
+      const decoded = jwt_decode(token);
+      userId = decoded.user_id || decoded.id || null;
+    } catch (err) {
+      console.error("Invalid token");
     }
   }
 
-  // 4️⃣ Attach listeners to ticket inputs
-  inputs.forEach((input) => {
-    input.addEventListener("input", updateSummary);
+  const selectedTickets = [];
+  document.querySelectorAll('#ticket-selector input[name="quantity"]').forEach((input) => {
+    const quantity = parseInt(input.value || 0);
+    const ticket_type_id = input.dataset.id;
+    if (quantity > 0) {
+      selectedTickets.push({ ticket_type_id, quantity });
+    }
   });
 
-  // 5️⃣ Initialize the summary
-  updateSummary();
-})
-.catch((error) => {
-              console.error("Error fetching ticket types:", error);
-            });
-        } catch (err) {
-          console.error("Error fetching event details:", err);
-          alert("An error occurred while loading the event.");
-        }
-      });
+  console.log("Selected tickets payload:", selectedTickets); // 👈 Diagnostic log
 
-      // Show/Hide Friend Email
-      const buyForFriendCheckbox = document.getElementById("buyForFriend");
-      const friendEmailContainer = document.getElementById("friendEmailContainer");
+  if (selectedTickets.length === 0) {
+    alert("Please select at least one ticket.");
+    return;
+  }
 
-      buyForFriendCheckbox.addEventListener("change", () => {
-        if (buyForFriendCheckbox.checked) {
-          friendEmailContainer.classList.remove("hidden");
-        } else {
-          friendEmailContainer.classList.add("hidden");
-        }
-      });
+  const payload = {
+    name,
+    email,
+    event_id: eventId,
+    user_id: userId,
+    tickets: selectedTickets,
+  };
 
-      document.getElementById("next-button").addEventListener("click", (e) => {
-        e.preventDefault();
-
-        document.getElementById("ticket-page").style.display = "none";
-        document.getElementById("paymentPage").classList.remove("hidden");
-
-        document.getElementById("next-button").classList.add("hidden");
-        document.getElementById("previous-button").classList.remove("hidden");
-      });
-
-      document.getElementById("previous-button").addEventListener("click", () => {
-        document.getElementById("ticket-page").style.display = "flex";
-        document.getElementById("paymentPage").classList.add("hidden");
-
-        document.getElementById("next-button").classList.remove("hidden");
-        document.getElementById("previous-button").classList.add("hidden");
-      });
-
-  document.getElementById("paymentForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const confirmEmail = document.getElementById("confirmEmail").value;
-    const eventId = document.getElementById("eventId").value;
-    const buyingForFriend = buyForFriendCheckbox.checked;
-    const friendEmail = document.getElementById("friendEmail").value;
-    const token = sessionStorage.getItem("token");
-    let userId = null;
-
-    if (email !== confirmEmail) {
-      alert("Email addresses do not match.");
+  if (buyingForFriend) {
+    if (!friendEmail) {
+      alert("Please enter your friend's email.");
       return;
     }
+    payload.friend_email = friendEmail;
+  }
 
-    if (!email || !eventId) {
-      alert("Please fill all fields and ensure you are logged in.");
-      window.location.href = "../index.html";
-      return;
-    }
-
-    if (token) {
-      try {
-        const decodedToken = jwt_decode(token);
-        userId = decodedToken.user_id || decodedToken.id || null;
-      } catch (err) {
-        console.error("Error decoding token:", err);
-      }
-    }
-
-    // Collect all selected tickets
-    const inputs = document.querySelectorAll('input[name="quantity"]');
-    let selectedTickets = [];
-    
-
-    inputs.forEach((input) => {
-      const quantity = parseInt(input.value || 0);
-      const available = parseInt(input.dataset.available);
-      const ticketTypeId = input.dataset.id;
-      const name = input.dataset.name;
-
-    
-
-      if (quantity > 0) {
-        selectedTickets.push({ ticket_type_id: ticketTypeId, quantity });
-      }
+ try {
+    const res = await fetch("http://localhost:3000/api/payment/initialize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
+    const data = await res.json();
+    console.log("Payment API response:", data);
 
-
-    if (selectedTickets.length === 0) {
-      alert("Please select at least one ticket.");
-      return;
+    if (data.status && data.data?.authorization_url) {
+      window.location.href = data.data.authorization_url;
+    } else {
+      alert("Payment initialization failed.");
     }
-
-    let payload = {
-      name,
-      email,
-      event_id: eventId,
-      user_id: userId,
-      tickets: selectedTickets,
-    };
-
-    if (buyingForFriend) {
-      if (!friendEmail) {
-        alert("Please enter your friend's email.");
-        return;
-      }
-      payload.friend_email = friendEmail;
-    }
-
-    try {
-      const paymentRes = await fetch("http://localhost:3000/api/payment/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const paymentData = await paymentRes.json();
-      console.log("Payment API response:", paymentData);
-
-      if (paymentData.status && paymentData.data && paymentData.data.authorization_url) {
-        window.location.href = paymentData.data.authorization_url;
-      } else {
-        alert("Failed to initialize payment. Please try again.");
-      }
-    } catch (err) {
-      console.error("Error initializing payment:", err);
-      alert("Something went wrong while initializing payment.");
-    }
-  });
-
-    </script>
+  } catch (err) {
+    console.error("Payment error:", err);
+    alert("Error while initializing payment.");
+  }
+});
+</script>
+  
   </body>
   </html>

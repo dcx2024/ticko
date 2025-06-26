@@ -277,6 +277,8 @@ const verifyPayment = async (req, res) => {
               ticketCheck.rows.length === 0 ||
               ticketCheck.rows[0].available_tickets < quantity
             ) {
+              return res.redirect('/checkout/failure.html');
+
               return res.status(400).json({
                 error: `Not enough tickets available for ticket type ${ticket_type_id}`,
               });
@@ -321,8 +323,7 @@ const verifyPayment = async (req, res) => {
 
             createdTickets.push(ticketResult);
 
-            // Update available tickets and invalidate cache
-            await updateAvailableTickets(event_id, ticket_type_id, quantity);
+           
           }
 
           // Mark payment as verified
@@ -331,13 +332,11 @@ const verifyPayment = async (req, res) => {
             [paymentReference]
           );
 
-          return res.json({
-            status: 'success',
-            message: 'Payment verified and tickets created.',
-            tickets: createdTickets,
-          });
+         return res.redirect(`/checkout/success.html`);
+
         } else {
-          return res.status(400).json({ error: 'Payment failed or pending' });
+         return res.redirect('/checkout/failure.html');
+
         }
       } catch (err) {
         console.error('Error verifying payment:', err);

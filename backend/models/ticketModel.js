@@ -13,37 +13,91 @@ if (!fs.existsSync(ticketsDir)) {
 }
 
 const createPDF = (data, filePath) => {
-    return new Promise((resolve, reject) => {
-        const doc = new PDFDocument({ size: 'A4' });
-        const writeStream = fs.createWriteStream(filePath);
-        doc.pipe(writeStream);
-
-        const {
-            event_name, name, email, typeName, price, payload, qr_code_data, isFriend
-        } = data;
-
-        const logoPath = path.resolve(__dirname, '../..', 'images/1744162770374.jpg');
-        doc.rect(0, 0, doc.page.width, doc.page.height).fill('#1f2937');
-        doc.image(logoPath, 50, 20, { width: 100, height: 50 });
-
-        doc.fillColor('#facc15').fontSize(22).text(`${event_name}`, 50, 80);
-
-        doc.fillColor('#ffffff').fontSize(16)
-            .text(`Name: ${name}${isFriend ? ' (for Friend)' : ''}`, 50, 120)
-            .text(`Email: ${email}`, 50, 145)
-            .text(`Type: ${typeName}`, 50, 170)
-            .text(`Price: ₦${price}`, 50, 195)
-            .text(`Reference: ${payload.slice(0, 24)}...`, 50, 220);
-
-        doc.fillColor('#f59e0b').fontSize(12).text(`${typeName} Access`, 50, 240, { underline: true });
-
-        doc.image(qr_code_data, doc.page.width - 180, 80, { width: 150, height: 150 });
-        doc.end();
-
-        writeStream.on('finish', resolve);
-        writeStream.on('error', reject);
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: [600, 250], // Custom ticket size
+      margin: 0
     });
+
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream);
+
+    const {
+      event_name, name, email, typeName, price, payload, qr_code_data, isFriend
+    } = data;
+
+    const logoPath = path.resolve(__dirname, '../..', 'images/logo.png');
+    const bgImagePath = path.resolve(__dirname, '../..', 'images/output.png');
+
+    const pageWidth = doc.page.width;
+
+    // === LEFT SECTION (Background Image) ===
+    doc.image(bgImagePath, 0, 0, {
+      width: 420,
+      height: 255,
+      align: 'left',
+      valign: 'top'
+    });
+
+    // Add logo on top
+    doc.image(logoPath, 10, -2, { width: 50, height: 50 });
+
+    // Name
+    doc.fillColor('#000000')
+      .fontSize(10)
+      .font('Helvetica-Bold')
+      .text(`${name}${isFriend ? ' (for Friend)' : ''}`, 40, 55);
+
+    // Event Name
+    doc.fontSize(36)
+      .font('Helvetica-Bold')
+      .text(`${event_name}`, 40, 70);
+
+    // Ticket Type with border
+    doc.roundedRect(40, 170, 110, 30, 5).strokeColor('#000').stroke();
+    doc.fontSize(14)
+      .font('Helvetica-Bold')
+      .text(`${typeName}`, 65, 178);
+
+    // Ticket Ref (vertical)
+    doc.rotate(-90, { origin: [10, 230] });
+    doc.fontSize(10).text(`Ref: ${payload.slice(0, 10)}...`, 10, 230);
+    doc.rotate(90, { origin: [10, 230] }); // Reset rotation
+
+    doc.save();
+doc.moveTo(420, 0)
+   .lineTo(420, 250)
+   .dash(5, { space: 5 })
+   .strokeColor('black')
+   .lineWidth(3)
+   .stroke();
+doc.undash();
+doc.restore();
+    // === RIGHT SECTION ===
+
+    // Background color behind QR code
+    doc.rect(420, 0, 180, 250).fill('#FDF3EA');
+
+    // Ticket number
+    doc.fillColor('#000')
+      .fontSize(10)
+      .text('NO: 000001', 450, 30);
+
+    // QR Code
+    doc.image(qr_code_data, 430, 60, {
+      width: 140,
+      height: 140,
+      align: 'center'
+    });
+
+    // Finalize
+    doc.end();
+
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+  });
 };
+
 
 const createTicket = async (event_id, user_id, ticket_type_id, quantity = 1,guestDetails = null) => {
   const createdTickets = [];
@@ -80,7 +134,7 @@ let userName, email;
     const { type_name: typeName, price, available_tickets } = typeRes.rows[0];
 
     // 2. Check if enough tickets available
-    if (available_tickets <= 0) {
+    if (available_tickets == 0) {
       // Notify admin sold out or low tickets
       await emailQueue.add({
         AdminMailOptions: {
@@ -161,56 +215,36 @@ let userName, email;
 };
 
 
-const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_email, guestDetails = null) => {
+const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_email, guestDetails = null, quantity = 1) => {
   try {
-    // Get ticket type availability and event info
-    const [ticketTypeRes, eventRes] = await Promise.all([
-      db.query('SELECT available_tickets FROM ticket_types WHERE id = $1', [ticket_type_id]),
-      db.query('SELECT admin_email, name FROM events WHERE id = $1', [event_id])
-    ]);
-
-    if (!ticketTypeRes.rows.length || !eventRes.rows.length) {
-      throw new Error('Invalid ticket type or event ID');
-    }
-
-    const availableTickets = ticketTypeRes.rows[0].available_tickets;
-    const admin_email = eventRes.rows[0].admin_email;
-    const event_name = eventRes.rows[0].name;
-
-    if (availableTickets <= 0) {
-      // Notify admin sold out
-      await emailQueue.add({
-        AdminMailOptions: {
-          from: process.env.GMAIL_USER,
-          to: admin_email,
-          subject: 'Tickets Sold Out',
-          html: `<p>Tickets for event <strong>${event_name}</strong> are sold out.</p><p>Please login to restock.</p>`
-        }
-      });
-      return { status: 'error', message: 'Sorry, tickets are sold out.' };
-    }
-
-    // Atomically decrement available tickets
+    // 1. Atomically decrement available tickets by quantity
     const { rows: updatedRows } = await db.query(
-      `UPDATE ticket_types SET available_tickets = available_tickets - 1 
-       WHERE id = $1 AND available_tickets > 0 
-       RETURNING available_tickets`,
-      [ticket_type_id]
+      `UPDATE ticket_types SET available_tickets = available_tickets - $1
+       WHERE id = $2 AND available_tickets >= $1 RETURNING available_tickets`,
+      [quantity, ticket_type_id]
     );
 
     if (!updatedRows.length) {
-      await emailQueue.add({
-        AdminMailOptions: {
-          from: process.env.GMAIL_USER,
-          to: admin_email,
-          subject: 'Tickets Sold Out',
-          html: `<p>Tickets for event <strong>${event_name}</strong> are sold out.</p><p>Please log in to restock tickets.</p>`
-        }
-      });
-      return { status: 'error', message: 'Sorry, tickets are sold out.' };
+      // Notify admin if sold out or no tickets left
+      const eventRes = await db.query('SELECT admin_email, name FROM events WHERE id = $1', [event_id]);
+      const admin_email = eventRes.rows[0]?.admin_email;
+      const event_name = eventRes.rows[0]?.name;
+
+      if (admin_email) {
+        await emailQueue.add({
+          AdminMailOptions: {
+            from: process.env.GMAIL_USER,
+            to: admin_email,
+            subject: 'Tickets Sold Out',
+            html: `<p>Tickets for event <strong>${event_name}</strong> are sold out or insufficient.</p>`
+          }
+        });
+      }
+
+      return { status: 'error', message: 'Sorry, tickets are sold out or insufficient quantity available.' };
     }
 
-    // Fetch event and ticket type info (no need to fetch user if guest)
+    // 2. Fetch event and ticket type info
     const [eventInfoRes, typeRes] = await Promise.all([
       db.query('SELECT name FROM events WHERE id = $1', [event_id]),
       db.query('SELECT type_name, price FROM ticket_types WHERE id = $1', [ticket_type_id])
@@ -223,7 +257,7 @@ const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_
     const event_name_final = eventInfoRes.rows[0].name;
     const { type_name: typeName, price } = typeRes.rows[0];
 
-    // Determine buyer name and email (handle guest or registered user)
+    // 3. Determine buyer name and email (handle guest or registered user)
     let buyerName, buyerEmail;
 
     if (user_id) {
@@ -241,64 +275,73 @@ const createTicketForAFriend = async (event_id, user_id, ticket_type_id, friend_
       throw new Error('No user or guest details provided');
     }
 
-    const timestamp = Date.now();
-    const payload = `${event_id}-${event_name_final}--${typeName}--${timestamp}`;
-    const qr_code_data = await QRCode.toDataURL(payload);
-    const filePath = path.join(ticketsDir, `ticket_friend_${user_id || 'guest'}_${timestamp}.pdf`);
+    // 4. Generate tickets one by one for quantity
+    const createdTickets = [];
 
-    await createPDF({
-      event_name: event_name_final,
-      name: buyerName,
-      email: friend_email,
-      typeName,
-      price,
-      payload,
-      qr_code_data,
-      isFriend: true
-    }, filePath);
+    for (let i = 0; i < quantity; i++) {
+      const timestamp = Date.now();
+      const payload = `${event_id}-${event_name_final}--${typeName}--${timestamp}-${i}`;
+      const qr_code_data = await QRCode.toDataURL(payload);
+      const filePath = path.join(ticketsDir, `ticket_friend_${user_id || 'guest'}_${timestamp}_${i}.pdf`);
 
-    // Insert ticket into DB
-    const { rows } = await db.query(
-      `INSERT INTO tickets (event_id, user_id, ticket_type_id, qr_code, is_valid, guest_email, guest_name)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [
-        event_id,
-        user_id || null,
-        ticket_type_id,
+      await createPDF({
+        event_name: event_name_final,
+        name: buyerName,
+        email: friend_email,
+        typeName,
+        price,
+        payload,
         qr_code_data,
-        true,
-        friend_email,
-        user_id ? null : buyerName
-      ]
-    );
+        isFriend: true
+      }, filePath);
 
-    // Send email with ticket attached
-    await emailQueue.add({
-      mailOptions: {
-        from: process.env.GMAIL_USER,
-        to: friend_email,
-        subject: `Your Ticket for ${event_name_final}`,
-        html: `<p>You received a <strong>${typeName}</strong> ticket for <strong>${event_name_final}</strong>!</p>`,
-        attachments: [{
-          filename: `ticket-${event_name_final}-${typeName}.pdf`,
-          content: fs.readFileSync(filePath).toString('base64'),
-          encoding: 'base64'
-        }]
-      }
-    });
+      // Insert ticket into DB
+      const { rows } = await db.query(
+        `INSERT INTO tickets (event_id, user_id, ticket_type_id, qr_code, is_valid, guest_email, guest_name)
+         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [
+          event_id,
+          user_id || null,
+          ticket_type_id,
+          qr_code_data,
+          true,
+          friend_email,
+          user_id ? null : buyerName
+        ]
+      );
 
-    // Clean up PDF file
-    fs.unlink(filePath, err => {
-      if (err) console.error('Error deleting ticket file:', err);
-    });
+      createdTickets.push(rows[0]);
 
-    return rows[0];
+      // Send email with ticket attached
+      const fileBuffer = fs.readFileSync(filePath);
+      await emailQueue.add({
+        mailOptions: {
+          from: process.env.GMAIL_USER,
+          to: friend_email,
+          subject: `Your Ticket for ${event_name_final}`,
+          html: `<p>You received a <strong>${typeName}</strong> ticket for <strong>${event_name_final}</strong>!</p>`,
+          attachments: [{
+            filename: `ticket-${event_name_final}-${typeName}.pdf`,
+            content: fileBuffer.toString('base64'),
+            encoding: 'base64'
+          }]
+        }
+      });
+
+      // Clean up PDF file
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Error deleting ticket file:', err);
+      });
+    }
+
+    return createdTickets;
 
   } catch (error) {
     console.error('Error generating ticket for friend:', error.message || error);
     throw error;
   }
 };
+
 
 
 const scanTicket = async (req, res) => {

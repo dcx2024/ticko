@@ -255,6 +255,9 @@ header img {
   color: #333;
 }
 
+ footer{
+    gap:20px;
+}
 .mobile-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -309,8 +312,6 @@ left: 15px
     box-shadow: none; /* Prevent overlap */
   }
 
-  footer{
-    margin-bottom:50px;
 }
 
 /* FAQ */
@@ -539,6 +540,7 @@ width: 60vw
       margin: 20px;
       
     }
+
 }
 
 @media only screen and (max-width: 390px){

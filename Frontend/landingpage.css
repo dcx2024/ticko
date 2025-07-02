@@ -310,34 +310,87 @@ left: 15px
   }
 }
 
+/* FAQ */
+#FAQ_container{
+  margin: 50px;
+  
+}
+#FAQ_container h1{
+  font-size: 40px;
 
+}
+details{
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 20px;
+  background-color: #f9f9f9;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: large;
+}
+details li{
+  font-weight: normal;
+  font-size: 17px;
+  font-family: sans-serif
+}
+details p{
+  font-weight: normal;
+  font-size: 17px;
+  font-family: sans-serif
+}
+li{
+  list-style: none;
+  margin-top: 10px;
+}
+summary{
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: 20px;
+  
+}
+
+summary::after{
+  content: "🔹";
+  position: absolute;
+  right: 0;
+
+  transition: transform 0.3s;
+}
+
+details [open] summary::after{
+  transform: rotate(180deg);
+}
+details p{
+  margin-top: 8px;
+}
 /* Footer */
 footer {
   display: flex;
   justify-content: space-between;
   padding: 60px 20px;
   margin-top: 50px;
-  background-color: #6AA4E7;
+  background-color: #4A90E2;
   color: black;
 }
 
 footer img{
-  width:150px
+  width:100px
 }
 
 footer p {
-  width: 70%;
-  color: black
+  width: 20%;
+  color: black;
 }
 
 footer ul {
   list-style-type: none;
-  padding: 3px 4px 3px 5px;
+  padding: 3px 3px 3px 3px;
 }
-
 a {
   text-decoration: none;
-  color: black
+  color: black;
 }
 
 @media only screen and (max-width:1100px){
@@ -477,6 +530,11 @@ width: 60vw
         width: 90vw;
         font-size: 14px;
     }
+
+    #FAQ_container{
+      margin: 20px;
+      
+    }
 }
 
 @media only screen and (max-width: 390px){
@@ -506,4 +564,44 @@ width: 60vw
     .pricing h3{
     font-size: 18px;
   }
-}
+  #FAQ_container{
+    margin: 10px;
+    
+  }
+
+
+  @media only screen and (max-width: 320px){
+    footer {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 30px 20px;
+      margin-top: 50px;
+      background-color: #4A90E2;
+      color: black;
+    }
+    
+    footer img{
+      width:100px
+    }
+    
+    footer p {
+      width: 20%;
+      color: black;
+    }
+    
+    footer ul {
+      list-style-type: none;
+      padding: 3px 3px 3px 3px;
+    }
+    .icons{
+      width: 40%;
+    }
+    
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+  }
+  

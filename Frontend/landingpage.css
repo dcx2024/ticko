@@ -372,7 +372,7 @@ details p{
 /* Footer */
 footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 60px 20px;
   margin-top: 50px;
   background-color: #4A90E2;

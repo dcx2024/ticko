@@ -308,6 +308,9 @@ left: 15px
     background-color: transparent;
     box-shadow: none; /* Prevent overlap */
   }
+
+  footer{
+    margin-bottom:50px;
 }
 
 /* FAQ */
@@ -381,7 +384,7 @@ footer img{
 
 footer p {
   width: 50%;
-  gap:20px
+  gap:20px;
   color: black;
 }
 

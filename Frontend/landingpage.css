@@ -380,7 +380,8 @@ footer img{
 }
 
 footer p {
-  width: 20%;
+  width: 50%;
+  gap:20px
   color: black;
 }
 

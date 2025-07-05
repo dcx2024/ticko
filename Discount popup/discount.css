@@ -1,0 +1,273 @@
+
+
+#PopupContainer{
+    position: relative;
+    background-color: white;
+    margin: 0 auto;
+    width: 50%;
+    height: auto;
+    z-index: 999;
+    border-radius: 20px;
+    box-shadow: 4px 0px 4px grey;
+}
+#CloseButton{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+#CloseIcon{
+    width: 70%;
+
+}
+#FormLeft{
+    padding: 0px;
+    margin: 20px;
+    width: 45%;
+    float: left;
+}
+#formright{
+    width: 40%;
+    margin: 20px;
+    float: right;
+}
+
+#DiscountImg{
+    width: 100%;
+    border-radius: 5px;
+    margin-right: 20px;
+    margin-top: 20px;
+
+}
+
+h1{
+    color: #0845a0;
+}
+
+select{
+    width: 100%;
+    border: none;
+    background-color: white;
+    padding: 5px;
+    font-size: 100%;
+    color: black;
+    font-weight: 300;
+    border-bottom: 0.5px solid #0845a0;
+    opacity: 0.7;
+    padding-left: 23px;
+}
+
+input{
+    border: none;
+    border-bottom: 0.5px solid #0845a0;
+    width: 100%;
+    padding: 5px;
+    background-color: white;
+    margin-top: 15px;
+
+}
+input:focus{
+    outline: none;
+    box-shadow: 0 0 5px #1e90ff;
+    background-image: none;
+}
+
+input::placeholder{
+    font-weight: 300;
+    color: black;
+    padding-left: 23px;
+    font-size: 15px;
+    opacity: 0.7;
+}
+.DiscountAmount{
+    background-image: url(PercentIcon.svg);
+    background-repeat: no-repeat;
+    background-size: 6%;
+}
+.DiscountQuantity{
+    background-image: url(TicketIcon.svg);
+    background-repeat: no-repeat;
+    background-size: 6%;
+}
+
+.line{
+    width: 43%;
+    margin-right: 5px;
+    background-image: url(CalendarIcon.svg);
+    background-repeat: no-repeat;
+    background-size: 14%;
+}
+
+
+
+p{
+    font-size: 17px;
+    margin-top: 9px;
+    margin-bottom: 9px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+
+
+
+#Submit{
+    color:green;
+    padding: 5px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    height: 30%;
+    background-color: white;
+    border: 1px solid green;    
+    margin-top: 20px;
+    border-radius: 5px;
+}
+#Submit:hover{
+    color: white;
+    background-color:green;
+    border: none;
+    transition: 0.5s ease-in-out;
+}
+/* _____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________ */
+
+
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ */
+
+
+@media only screen and (max-width: 768px){
+    .overlay{
+        position: fixed;
+        bottom: 0;
+        inset: 0;
+        display: flex;
+        background-color:  rgba(0, 0, 0, 0.4);
+        align-items: center;
+        justify-content: center;
+
+
+    }
+    #PopupContainer{
+        position: fixed;
+        width: 100%;
+        height: 63%;
+        bottom: 0%;
+        left: 0;
+        padding: 10px;
+        background-color: white;
+        box-shadow: 0px -4px 10px grey rgb(0, 0, blue);
+        animation: slideup 0.5s ease-out forwards;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+        z-index: 999;
+    }   
+    @keyframes slideup {
+        from{
+            transform: translateY(60%);
+        }
+        to{
+            transform: translateY(0%);
+        }
+    }
+    #CloseButton{
+        position: absolute;
+        top: 10;
+        right: 10;
+    }
+    #formright{
+        display: none;
+        background-color: white;
+    }
+    #FormLeft{
+        padding: 0px;
+        margin: 15px;
+        float: none;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    h1{
+        font-size: 20px;
+        color: #0845a0;
+    }
+    select{
+        width: 80%;
+        border: none;
+        background-color: white;
+        padding: 5px;
+        font-size: 100%;
+        color: #000000;
+        font-weight: 300;
+        border-bottom: 0.5px solid #0845a0;
+        opacity: 0.7;
+        padding-left: 23px;
+    }
+    select:focus{
+        outline: none;
+        border: none;
+        box-shadow: 0 0 5px #1e90ff;
+        background-image: none;
+    }
+    input{
+        border-bottom: 0.5px solid #0845a0;
+        width: 80%;
+        padding: 4px;
+        background-color: white;
+        margin-top: 10px;
+        
+    
+    }
+    input:focus{
+        outline: none;
+        border: none;
+        box-shadow: 0 0 5px #1e90ff;
+        background-image: none;
+    }
+    
+    input::placeholder{
+        font-weight: 300;
+        color: black;
+        padding-left: 20px;
+        font-size: 15px;
+        opacity: 0.7;
+    }
+
+    .DiscountAmount{
+        background-image: url(PercentIcon.svg);
+        background-repeat: no-repeat;
+        background-size: 6%;
+    }
+    .DiscountQuantity{
+        background-image: url(TicketIcon.svg);
+        background-repeat: no-repeat;
+        background-size: 6%;
+    }
+    
+    .line{
+        width: 38%;
+        margin-right: 5px;
+        background-image: url(CalendarIcon.svg);
+        background-repeat: no-repeat;
+        background-size: 12%;
+    }
+
+    #Submit{
+        color: white;
+        padding: none;
+        width: 80%;
+        font-size: 16px;
+        font-weight: bold;
+        height: 8%;
+        background-color: green;
+        border: none;    
+        margin-top: 10px;
+        border-radius: 5px;
+    }
+    #Submit:hover{
+        color: green;
+        background-color:white;
+        border: none;
+        transition: 0.5s ease-in-out;
+    }
+}

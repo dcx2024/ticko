@@ -1,0 +1,362 @@
+@media only screen and (min-width: 426px){
+body{
+    margin-left: 30px;
+    margin-right: 30px;
+    font-size: 3vh 1vh;
+    background-image: linear-gradient(180deg, rgb(238, 238, 255), rgb(179, 179, 255));
+}
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    padding: 0px 76px 5px 75px;
+    background-color: transparent;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.nav {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+nav {
+  display: flex;
+  gap: 15px;
+}
+nav a {
+  color: #4A90E2;
+  font-weight: 500;
+}
+/* Logo */
+header img {
+  width: 80px;
+}
+/* Buttons */
+.acctBtn {
+  display: flex;
+  gap: 10px;
+}
+.acctBtn button {
+  background-color: #4A90E2;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.acctBtn a {
+  color: white;
+}
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1px solid #ddd;
+  display: none;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  z-index: 999;
+}
+.mobile-bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #4A90E2;
+  text-decoration: none;
+}
+.mobile-bottom-nav a img {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+}
+
+h1{
+  font-size: 60px;
+  background: linear-gradient(180deg,#1a4977 ,#4A90E2, #ff00f2);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 5s ease infinite;
+}
+
+@keyframes gradient{
+  0%{
+    background-position: 0% 50%;
+  }
+  50%{
+    background-position: 50% 100%
+  }
+  100%{
+    background-position: 0% 50%
+  }
+}
+h2{
+  font-family: "Noto Sans", sans-serif;
+}
+h3{
+  font-size: 40px;
+  font-weight: bold;
+  
+}
+h3:hover{
+  color: white;
+  transition: 0.5s;
+  text-shadow: 
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px 1px 0 black,
+     1px  1px 0 black;
+}
+
+#welcome{
+  text-align: center;
+  margin-bottom: 50px;
+}
+.WCU{
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.WCUCards{
+  display: flex;
+  justify-content: space-between;
+  margin: 40px;
+}
+.WriteupEven{
+  width: 45%;
+  
+}
+.WriteupOdd{
+  width: 45%;
+  
+  float: right;
+}
+.WriteupOddImg{
+  float: left;
+
+}
+p{
+  font-size: 20px;
+  font-family: "Archivo",sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+.WriteupEvenContainer{
+    display: flex;
+    justify-content: space-between;
+    
+}
+.WriteupOddContainer{
+  display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+ }
+
+.WCUImg{
+  width: 40vw;
+  border-radius: 5px;
+}
+#FeauturesContainer{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: 3vh;
+  margin-bottom: 50px;
+}
+.FeaturesCard{
+  border: 2px solid black;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+  height: fit-content;
+  background-color: white;
+  width:  30%;
+  flex-grow: 2;
+  flex-shrink: 2;
+  margin: 10px;
+}
+.FeaturesCardimg{
+  width: 100%;
+  height: auto;
+  
+}
+#CreateEvent{
+    font-size: 3vh;
+    height: 50px;
+    width: 50%;
+    border-radius: 30px;
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #4A90E2;
+    background-image: linear-gradient(145deg, #0066ff, #cc00ff);
+    color: white;
+    
+    font-weight: bold;
+}
+#CreateEvent:hover{
+  background-image: linear-gradient(145deg, #ffffff, #bfc1c4);
+  transition: 1s;
+}
+}
+
+/* ________________________________________________________________________ */
+
+
+
+@media only screen and (max-width: 768px){
+    body{
+      margin-left: 20px;
+      margin-right: 20px;
+      font-size: 3vh 1vh;
+      background-image: linear-gradient(180deg, rgb(238, 238, 255), rgb(179, 179, 255));
+        
+    }
+    header #LinkContainer{
+        display: none;
+    }
+    
+    header img{
+        position: absolute;
+        top: 0;
+        left: 15px
+    }
+    header {
+        background-color: transparent;
+        box-shadow: none; /* Prevent overlap */
+    }
+    a{
+        text-decoration: none;
+        color: #1a4977;
+        padding: 0px;
+        font-size: 18px;
+    }
+    a:hover{
+        padding: 18px;
+        font-size: 20px;
+        transition: 0.35s ease-in-out;
+    }
+    .mobile-bottom-nav {
+        display: flex;
+    }
+    .nav {
+        display: none;
+    }
+    nav {
+        display: none;
+
+    }
+
+
+    h1{
+        font-size: 50px;
+        background: linear-gradient(180deg,#1a4977 ,#4A90E2, #ff00f2);
+        background-size: 200% 200%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradient 5s ease infinite;
+        
+
+    }
+    @keyframes gradient{
+      0%{
+         background-position: 0% 50%;
+      }
+      50%{
+        background-position: 50% 100%
+      }
+      100%{
+        background-position: 0% 50%
+      }
+    }
+    h2{
+        font-family: "Noto Sans", sans-serif;
+        font-size: 2rem;
+    }
+    h3{
+      font-size: 30px;
+      
+      font-weight: bolder;
+    }
+    h3:hover{
+      color: white;
+      transition: 0.5s;
+      text-shadow: 
+        -1px -1px 0 black,
+         1px -1px 0 black,
+        -1px 1px 0 black,
+         1px  1px 0 black;
+    }
+    p{
+      font-family: "Archivo",sans-serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+      font-variation-settings: "wdth" 100;
+    }
+    img{
+      height: auto;
+      width: 100%;
+      border-radius: 5px;
+    }
+    h1{
+      text-align: center;
+    }
+    #welcome{
+        margin-bottom: 10px;
+    }
+    .WCUCards{
+      display: flex;
+      justify-content: space-between;
+      margin: 10px;
+      text-align: center;
+    }
+    #FeauturesContainer{
+      text-align: center;
+      padding: 10px;
+      
+    }
+    .FeaturesCard{
+        border: 2px solid black;
+        border-radius: 10px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 10px;
+        height: auto;
+        background-color: white;
+        width:  fit-content;
+        flex-grow: 2;
+        flex-shrink: 2;
+        margin: 10px;
+    }
+    #CreateEvent{
+        font-size: 3vh;
+        height: 50px;
+        width: 50%;
+        border-radius: 30px;
+        display: block;
+        margin: 0 auto;
+        border: 2px solid #4A90E2;
+        background-image: linear-gradient(145deg, #0066ff, #cc00ff);
+        color: white;
+        font-weight: bold;
+    }
+    #CreateEvent:hover{
+       background-image: linear-gradient(145deg, #ffffff, #bfc1c4);
+      
+      transition: 1s;
+    }
+    
+}
+

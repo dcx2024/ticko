@@ -69,7 +69,7 @@ togglePassword.onclick = function () {
             const selector = document.getElementById('roleSelector').value;
 
 try {
-    const res = await fetch('http://localhost:3000/api/auth/signUp', {
+    const res = await fetch('/api/auth/signUp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role: selector })

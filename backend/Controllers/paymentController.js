@@ -203,8 +203,8 @@ const updateAvailableTickets = async (event_id, ticket_type_id, quantity) => {
   }
 
   // Invalidate cache for this event's ticket types (adjust cache key if needed)
-  await invalidateCache(`event:${event_id}:ticket_types`);
-await invalidateCache(`event:${event_id}`)
+//  await invalidateCache(`event:${event_id}:ticket_types`);
+//await invalidateCache(`event:${event_id}`)
 
   return updateResult.rows[0].available_tickets;
 };
@@ -277,7 +277,8 @@ const verifyPayment = async (req, res) => {
               ticketCheck.rows.length === 0 ||
               ticketCheck.rows[0].available_tickets < quantity
             ) {
-              return res.redirect('/checkout/failure.html');
+          res.redirect('https://ticko-frontend.onrender.com/checkout/failure.html');
+
 
               return res.status(400).json({
                 error: `Not enough tickets available for ticket type ${ticket_type_id}`,
@@ -332,10 +333,12 @@ const verifyPayment = async (req, res) => {
             [paymentReference]
           );
 
-         return res.redirect(`/checkout/success.html`);
+         res.redirect('https://ticko-frontend.onrender.com/checkout/success.html');
+
 
         } else {
-         return res.redirect('/checkout/failure.html');
+    res.redirect('https://ticko-frontend.onrender.com/checkout/failure.html');
+
 
         }
       } catch (err) {

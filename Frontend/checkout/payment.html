@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const eventRes = await fetch(`http://localhost:3000/api/event/${eventId}`);
+    const eventRes = await fetch(`/api/event/${eventId}`);
     if (!eventRes.ok) {
       alert("Failed to load event details.");
       return;
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const eventData = await eventRes.json();
     document.getElementById("eventId").value = eventData.id;
 
-    const response = await fetch(`http://localhost:3000/api/ticket/getTicketType/${eventId}`);
+    const response = await fetch(`/api/ticket/getTicketType/${eventId}`);
     const result = await response.json();
 
     const ticketTypes = result.data;
@@ -327,7 +327,7 @@ document.getElementById("paymentForm").addEventListener("submit", async (e) => {
   }
 
  try {
-    const res = await fetch("http://localhost:3000/api/payment/initialize", {
+    const res = await fetch("/api/payment/initialize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

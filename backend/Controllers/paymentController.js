@@ -123,8 +123,8 @@
       }
 
       const paystackAmount = baseAmount * 100; // Convert to kobo
-      const paystackFee = Math.floor(0.015 * paystackAmount); // NGN 300 fixed
-      const totalAmount = Math.floor(0.04*paystackAmount) + paystackFee;
+      const paystackFee = Math.floor(0.015 * paystackAmount)=Math.floor(0.04*paystackAmount); // NGN 300 fixed
+      const totalAmount = paystackAmount+ paystackFee;
 
       const params = JSON.stringify({
         email,

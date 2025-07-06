@@ -279,7 +279,7 @@ sessionStorage.setItem("business_bank", bank)
 
 let eventId;
     try {
-        const eventRes = await fetch('http://localhost:3000/api/event/createEvents', {
+        const eventRes = await fetch('/api/event/createEvents', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
@@ -334,7 +334,7 @@ let eventId;
     
     try {
 
-        const accountRes = await fetch('http://localhost:3000/api/payment/createSubAcct', {
+        const accountRes = await fetch('/api/payment/createSubAcct', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -362,7 +362,7 @@ let eventId;
 
         async function loadBanks(){
             try{
-                const res = await fetch('http://localhost:3000/api/payment/fetchBanks');
+                const res = await fetch('/api/payment/fetchBanks');
                 const data = await res.json()
 
                 if(data.status && data.banks){

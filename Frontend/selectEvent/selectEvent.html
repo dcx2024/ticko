@@ -60,7 +60,7 @@
         const params = new URLSearchParams(window.location.search);
         const eventId = params.get('id');
 
-        fetch(`http://localhost:3000/api/event/${eventId}`)
+        fetch(`/api/event/${eventId}`)
         .then(res => {
             if (!res.ok) throw new Error('Event not found');
             return res.json();
@@ -78,7 +78,7 @@
             document.getElementById('event_details').innerHTML = `
             <section class="event-details">
             <div class>
-                <img class="eventImage"src="http://localhost:3000${event.image}" alt="Event Image" />
+                <img class="eventImage"src="https://ticko-l27l.onrender.com${event.image}" alt="Event Image" />
                 <h2>${event.name}</h2>
                 <button onclick="window.location.href='../checkout/payment.html?id=${eventId}'" class="ticketBuy">Get a ticket</button>
 </div>

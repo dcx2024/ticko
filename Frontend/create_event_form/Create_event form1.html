@@ -307,7 +307,7 @@ let eventId;
         }
 
         try {
-            const res = await fetch('http://localhost:3000/api/ticket/createTicketTypes', {
+            const res = await fetch('/api/ticket/createTicketTypes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

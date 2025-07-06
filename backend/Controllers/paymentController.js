@@ -28,7 +28,7 @@
         business_name: businessName,
         account_number: account_number,
         bank_code: bank,
-        percentage_charge: 96,
+        percentage_charge: 4,
       });
 
       const options = {
@@ -130,7 +130,7 @@
         email,
         amount: totalAmount,
         metadata: { event_id,user_id: user_id || null, tickets,name,email, ...(friend_email && { friend_email }) },
-        callback_url: 'http://localhost:3000/api/payment/verify/',
+        callback_url: '/api/payment/verify/',
       });
 
       const options = {

@@ -130,7 +130,7 @@
         email,
         amount: totalAmount,
         metadata: { event_id,user_id: user_id || null, tickets,name,email, ...(friend_email && { friend_email }) },
-       callback_url: `https://ticko-l27l.onrender.com/api/payment/verify/`
+       callback_url: `https://ticko-l27l.onrender.com/api/payment/verify/`,
 
       });
 
@@ -278,7 +278,7 @@ const verifyPayment = async (req, res) => {
               ticketCheck.rows.length === 0 ||
               ticketCheck.rows[0].available_tickets < quantity
             ) {
-          res.redirect('https://ticko-frontend.onrender.com/checkout/failure.html');
+          res.redirect('https://ticko-l27l.onrender.com/checkout/failure.html');
 
 
               return res.status(400).json({
@@ -334,11 +334,11 @@ const verifyPayment = async (req, res) => {
             [paymentReference]
           );
 
-         res.redirect('https://ticko-frontend.onrender.com/checkout/success.html');
+         res.redirect('https://ticko-l27l.onrender.com/checkout/success.html');
 
 
         } else {
-    res.redirect('https://ticko-frontend.onrender.com/checkout/failure.html');
+    res.redirect('https://ticko-l27l.onrender.com/checkout/failure.html');
 
 
         }

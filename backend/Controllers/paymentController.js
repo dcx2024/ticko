@@ -130,7 +130,7 @@
         email,
         amount: totalAmount,
         metadata: { event_id,user_id: user_id || null, tickets,name,email, ...(friend_email && { friend_email }) },
-       callback_url: `https://ticko-l27l.onrender.com/api/payment/verify`
+       callback_url: `https://ticko-l27l.onrender.com/api/payment/verify/`
 
       });
 

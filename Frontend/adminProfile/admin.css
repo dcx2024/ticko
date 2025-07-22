@@ -1,0 +1,45 @@
+/* NAV CONTAINER */
+nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;          /* Center items horizontally */
+    justify-content: space-between; /* Space between logo, buttons, and footer if any */
+    gap: 20px;
+    width: 250px;                 /* Fixed width for navbar */
+    height: 100vh;
+    padding: 20px;
+    background-color: #ffffff;    /* White background */
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* Light shadow for separation */
+}
+
+/* LOGO IMAGE */
+nav img {
+    width: 60%;                   /* More visible logo */
+    margin-bottom: 40px;          /* Space below logo */
+    object-fit: contain;
+}
+
+/* NAV BUTTON WRAPPER */
+nav div {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+/* BUTTONS */
+nav button {
+    background-color: white;
+    border: none;
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+}
+
+nav button:hover {
+    background-color: #f0f0f0;
+}

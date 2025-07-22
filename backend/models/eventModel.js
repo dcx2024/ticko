@@ -30,4 +30,53 @@ const getEventById = async (eventId) => {
   };
 };
 
-module.exports = { createEvent, getAllEvents, getEventById };
+// Update event details by ID
+const updateEventById = async (eventId, updateData) => {
+  const {
+    name,
+    description,
+    location,
+    start_time,
+    end_time,
+    status,
+    business_name,
+    business_account_number,
+    business_bank
+  } = updateData;
+
+  const result = await db.query(
+    `UPDATE events SET
+      name = $1,
+      description = $2,
+      location = $3,
+      start_time = $4,
+      end_time = $5,
+      status = $6,
+      business_name = $7,
+      business_account_number = $8,
+      business_bank = $9,
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = $10
+    RETURNING *`,
+    [name, description, location, start_time, end_time, status, business_name, business_account_number, business_bank, eventId]
+  );
+
+  return result.rows[0];
+};
+
+// Get past events by admin ID (events with end_time in the past)
+const getPastEventsByAdmin = async (adminId) => {
+  const result = await db.query(
+    `SELECT id, name, start_time, end_time, status, admin_email, business_name, business_account_number, business_bank
+     FROM events
+     WHERE admin_id = $1 AND end_time < NOW()
+     ORDER BY end_time DESC`,
+    [adminId]
+  );
+  return result.rows;
+};
+
+
+
+module.exports = { createEvent, getAllEvents, getEventById, updateEventById, getPastEventsByAdmin };
+

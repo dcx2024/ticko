@@ -2,7 +2,8 @@ const {
     getTotalSales,
     getTotalTicketSales,
     getEventFromOwner,
-    getTicketTypeBreakdown
+    getTicketTypeBreakdown,
+    getRecentTransactions
 } = require('../models/dashboardModel');
 
 // Handler to get event by admin
@@ -29,6 +30,18 @@ const getEventFromOwnerHandler = async (req, res) => {
     }
 };
 
+const getRecentTransactionsHandler = async (req, res) => {
+  const { event_id } = req.params;
+  try {
+    const transactions = await getRecentTransactions(event_id);
+    res.status(200).json(transactions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while fetching transactions.' });
+  }
+};
+
+
 // Handler to fetch event stats (e.g., total sales, ticket types)
 const getDashboardStats = async (req, res) => {
     const { event_id } = req.params;  // Extract event_id from URL params
@@ -54,4 +67,4 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
-module.exports = { getDashboardStats, getEventFromOwnerHandler };
+module.exports = { getDashboardStats, getEventFromOwnerHandler,getRecentTransactionsHandler };

@@ -53,12 +53,39 @@ const getTicketTypeBreakdown = async (event_id) => {
     return result.rows;
 };
 
+const getRecentTransactions = async (event_id) => {
+  try {
+    const result = await db.query(`
+      SELECT 
+        p.name,
+        p.email,
+        p.quantity,
+        p.amount AS total_price,
+        p.verified_at AS purchase_date,
+        tt.type_name AS ticket_type
+      FROM payments p
+      LEFT JOIN ticket_types tt ON p.ticket_type_id = tt.id
+      WHERE p.event_id = $1
+        AND p.verified = true
+      ORDER BY p.verified_at DESC
+      LIMIT 10
+    `, [event_id]);
+
+    return result.rows;  // Return the array of rows
+  } catch (error) {
+    console.error('Error fetching recent transactions:', error);
+    throw error;  // Let the controller handle the error
+  }
+};
+
+
 
 module.exports = {
     getTotalSales,
     getTotalTicketSales,
     getStandardTicket,
     getEventFromOwner,
-    getTicketTypeBreakdown
+    getTicketTypeBreakdown,
+    getRecentTransactions
 };
 

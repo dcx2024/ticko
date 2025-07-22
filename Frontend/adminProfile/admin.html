@@ -1,232 +1,694 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="admin-dashboard.css">
-</head>
-
-<body>
-  <button id="dashboardTab">Dashboard</button>
-  <button id="eventsTab">Events</button>
-  <button id="walletTab">Wallet</button>
-
-  <button id="contactTab">Contact</button>
-  <button id="settingsTab">Settings</button>
-  <button id="logout">Logout</button>
-
-
-
-
-  <div class="admin-dashboard">
-    <h1>Event Stats Dashboard</h1>
-
-    <!-- Event Stats Section -->
-    <div class="stats-section">
-      <div class="stat-box">
-        <h3>Total Sales</h3>
-        <p id="totalSales">Loading...</p>
-      </div>
-      <div class="stat-box">
-        <h3>Total Ticket Sales</h3>
-        <p id="totalTicketSales">Loading...</p>
-      </div>
-      <div class="stat-box">
-        <h3>Standard Ticket</h3>
-        <p id="standardTicket">Loading...</p>
-      </div>
-      <div class="stat-box">
-        <h3>Ticket Type Breakdown</h3>
-        <div id="ticketTypeBreakdown">Loading...</div>
-      </div>
-    </div>
-
-  </div>
-
-<section id="event">
-
-<div class="stat-box">
-  <h3>Total Events</h3>
-  <div id="totalEvents"></div>
-</div>
-<div class="edit-event">
-
-  <!--There should be a form-->
-</div>
-
-
-  <div id="ticketForm" class="tab-content">
-        <h2>Ticket Details</h2>
-        <form id="ticketDetailsForm">
-            <div id="ticketTypesContainer">
-                <!-- Dynamic ticket forms will be added here -->
-                <div class="ticket-form-group" id="ticketForm1">
-                    <label for="ticketType1">Ticket Type:</label><br>
-                    <input type="text" id="ticketType1" name="ticketType[]" required placeholder="Ticket Type"><br><br>
-
-                    <label for="ticketPrice1">Ticket Price:</label><br>
-                    <input type="number" id="ticketPrice1" name="ticketPrice[]" required placeholder="Price"><br><br>
-
-                    <label for="ticketAvailability1">Available Tickets:</label><br>
-                    <input type="number" id="ticketAvailability1" name="ticketAvailability[]" required placeholder="Availability"><br><br>
-
-<button type="button" class="add-ticket-btn" onclick="addTicketForm()">Add Type</button>
-                    <button type="button" class="remove-ticket-btn" onclick="removeTicketForm('ticketForm1')">Remove Ticket Type</button>
-                </div>
-            </div>
-       <div class="form-navigation">
-    <button type="button" onclick="switchTab('event')">Previous</button>
-    <button type="button" onclick="switchTab('account')">Next</button>
-</div>
-        </form>
-        <a href="../events/event.html"></a>
-    </div>
-</section>
-
-  <script>
-    const token = sessionStorage.getItem('token');
-    const params = new URLSearchParams(window.location.search);
-    const adminId = params.get('userId');
-    console.log("Extracted adminId:", adminId);
-    if (!token) {
-      alert('You need to log in first!');
-      window.location.href = '../login/login.html';
-    }
-  
-    const getEventIdFromAdmin = async () => {
-      try {
-        const response = await fetch(`http://localhost:3000/api/dashboard/${adminId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
-  
-        if (!response.ok) throw new Error("Failed to fetch event ID");
-  
-        const data = await response.json();
-        console.log(data); 
-        return data.event_id;
-      } catch (error) {
-        console.error("Error fetching event ID:", error);
-        return null;
-      }
-    };
-  
-    const fetchEventStats = async (eventId) => {
-      try {
-        const response = await fetch(`http://localhost:3000/api/dashboard/dashboardStats/${eventId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
-  
-        if (!response.ok) throw new Error("Failed to fetch dashboard stats");
-  
-        const data = await response.json();
-  
-        document.getElementById('totalSales').textContent = `$${data.totalSales}`;
-        document.getElementById('totalTicketSales').textContent = data.totalTickets;
-  
-        const standard = data.ticketTypes.find(t => t.type_name === 'Standard');
-        if (standard) {
-          document.getElementById('standardTicket').textContent = `${standard.type_name}: ${standard.available_tickets} available`;
-        } else {  
-          document.getElementById('standardTicket').textContent = `Standard ticket not found`;
-        }
-  
-        let breakdownHTML = '<ul>';
-        data.ticketTypes.forEach(ticket => {
-          breakdownHTML += `<li>${ticket.type_name}: ${ticket.sold_tickets} sold / ${ticket.available_tickets} available</li>`;
-        });
-        breakdownHTML += '</ul>';
-        document.getElementById('ticketTypeBreakdown').innerHTML = breakdownHTML;
-  
-      } catch (error) {
-        console.error("Error fetching event stats:", error);
-        alert("Failed to load dashboard stats.");
-      }
-    };
-  
-    const init = async () => {
-  const eventId = await getEventIdFromAdmin();
-  console.log("Received Event ID:", eventId);  // Add this
-
-  if (eventId) {
-    await fetchEventStats(eventId);
-  } else {
-    alert("No event ID found for this admin.");
-  }
-};
-
-    
-  
-    window.onload = init;
-
-    function switchTab(){
-      const dashboard=document.getElementById("dashboardTab")
-    }
-  </script>
-
-
   <style>
-    /* Basic Styles for the Admin Dashboard */
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
       margin: 0;
       padding: 0;
+      display: flex;
+      height: 100vh;
     }
-
-    .admin-dashboard {
-      margin: 20px;
+    nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      width: 250px;
+      height: 100vh;
       padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     }
-
-    h1 {
-      text-align: center;
+    nav img {
+      width: 60%;
+      margin-bottom: 40px;
+      object-fit: contain;
+    }
+    nav div {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    nav button {
+      background-color: white;
+      border: none;
+      padding: 10px 15px;
+      text-align: left;
+      font-size: 16px;
+      color: #333;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      border-radius: 8px;
+    }
+    nav button:hover {
+      background-color: #f0f0f0;
+    }
+    nav button.active {
+      background-color: #ddd;
+      font-weight: bold;
+    }
+    main.admin-dashboard {
+      flex-grow: 1;
+      padding: 30px;
+      overflow-y: auto;
+      max-height: 100vh;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
       color: #333;
     }
-
     .stats-section {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
       margin-top: 30px;
     }
-
     .stat-box {
       background-color: #fff;
       padding: 20px;
       margin: 10px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 200px;
+      width: 250px;
       text-align: center;
     }
-
     .stat-box h3 {
       color: #333;
       margin-bottom: 10px;
     }
-
     .stat-box p {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
       color: #333;
     }
-
     #ticketTypeBreakdown ul {
       list-style-type: none;
       padding: 0;
     }
-
     #ticketTypeBreakdown li {
       margin: 5px 0;
       color: #555;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f9f9f9;
+    }
+    .hidden {
+      display: none;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button.submit-btn {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button.submit-btn:hover {
+      background-color: #0056b3;
+    }
   </style>
-</body>
+</head>
+<body>
+  <nav>
+    <img src="../images/logo-without-bg.png" alt="Logo" />
+    <div>
+      <button id="home" class="nav-btn">Home</button>
+      <button id="dashboardTab" class="nav-btn active">Dashboard</button>
+      <button id="eventsTab" class="nav-btn">Events</button>
+      <button id="walletTab" class="nav-btn">Wallet</button>
+      <button id="contactTab">Contact</button>
+    </div>
+    <button id="settingsTab" class="nav-btn">Settings</button>
+    <button id="logout">Logout</button>
+  </nav>
 
+  <main class="admin-dashboard">
+    <!-- Dashboard Section -->
+    <section id="dashboardSection">
+      <h1 id="totalSales">Loading total sales...</h1>
+      <section class="stats-section">
+        <div class="stat-box">
+          <h3>Total Ticket Sales</h3>
+          <p id="totalTicketSales">Loading...</p>
+        </div>
+
+        <div class="stat-box">
+          <h3>Standard Ticket Availability</h3>
+          <p id="standardTicket">Loading...</p>
+        </div>
+
+        <div class="stat-box">
+          <h3>Ticket Type Breakdown</h3>
+          <div id="ticketTypeBreakdown">Loading...</div>
+        </div>
+      </section>
+
+      <h2>Recent Transactions</h2>
+      <table id="transactionsTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Ticket Type</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Purchase Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5">Loading transactions...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Events Section -->
+    <section id="eventsSection" class="hidden" data-current-event-id="">
+      <h1>Events</h1>
+      <h2>Current Event Stats</h2>
+      <p><strong>Event ID:</strong> <span id="currentEventId"></span></p>
+      <p><strong>Total Sales:</strong> $<span id="currentEventTotalSales">0</span></p>
+      <p><strong>Total Tickets Sold:</strong> <span id="currentEventTotalTickets">0</span></p>
+
+      <h3>Past Events</h3>
+      <ul id="pastEventsList">Loading past events...</ul>
+
+      <h3>Update Event Details</h3>
+      <form id="eventUpdateForm">
+        <label for="eventName">Event Name</label>
+        <input type="text" id="eventName" name="eventName" required />
+
+        <label for="eventDate">Event Date</label>
+        <input type="date" id="eventDate" name="eventDate" required />
+
+        <label for="eventLocation">Event Location</label>
+        <input type="text" id="eventLocation" name="eventLocation" required />
+
+        <button type="submit" class="submit-btn">Update Event</button>
+      </form>
+
+      <h2>Ticket Details</h2>
+      <form id="ticketDetailsForm">
+        <div id="ticketTypesContainer">
+          <!-- Ticket forms will be dynamically added here -->
+        </div>
+        <button type="button" onclick="addTicketForm()">Add Ticket Type</button>
+        <button type="submit" class="submit-btn">Save Tickets</button>
+      </form>
+    </section>
+
+    <!-- Wallet Section -->
+    <section id="walletSection" class="hidden" data-current-event-id="">
+      <h1>Wallet</h1>
+      <section class="stats-section">
+        <div class="stat-box">
+          <h3>Total Sales</h3>
+          <p id="walletTotalSales">$0</p>
+        </div>
+      </section>
+
+      <h2>Recent Transactions</h2>
+      <table id="walletTransactionsTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Ticket Type</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Purchase Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5">Loading transactions...</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Edit Payout Account</h3>
+      <form id="payoutAccountForm">
+        <label for="bankSelect">Bank</label>
+        <select id="bankSelect" name="bankSelect" required>
+          <option value="">Select a bank</option>
+          <!-- Banks will be dynamically loaded here -->
+        </select>
+
+        <label for="accountNumberInput">Account Number</label>
+        <input type="text" id="accountNumberInput" name="accountNumber" required placeholder="Enter account number" />
+
+        <label for="accountHolderInput">Account Holder Name</label>
+        <input type="text" id="accountHolderInput" name="accountHolder" required placeholder="Enter account holder's name" />
+
+        <button type="submit" class="submit-btn">Update Payout Account</button>
+      </form>
+    </section>
+  </main>
+
+<script>
+  const token = sessionStorage.getItem('token');
+  const params = new URLSearchParams(window.location.search);
+  const adminId = params.get('userId');
+  if (!token) {
+    alert('You need to log in first!');
+    window.location.href = '../login/login.html';
+  }
+
+  const navButtons = document.querySelectorAll('nav .nav-btn');
+  const sections = {
+    dashboard: document.getElementById('dashboardSection'),
+    events: document.getElementById('eventsSection'),
+    wallet: document.getElementById('walletSection'),
+  };
+
+  // Helper: Show one tab, hide others
+  function showTab(tabName) {
+    Object.entries(sections).forEach(([key, section]) => {
+      if (key === tabName) {
+        section.classList.remove('hidden');
+      } else {
+        section.classList.add('hidden');
+      }
+    });
+    navButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.id === tabName + 'Tab');
+    });
+  }
+
+  // Fetch event ID from admin
+  async function getEventIdFromAdmin() {
+    try {
+      const response = await fetch(`http://localhost:3000/api/dashboard/${adminId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch event ID');
+      const data = await response.json();
+      return data.event_id;
+    } catch (e) {
+      console.error(e);
+      alert('Error loading event ID');
+      return null;
+    }
+  }
+
+  // Fetch dashboard stats
+  async function fetchEventStats(eventId) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/dashboard/dashboardStats/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+      const data = await response.json();
+
+      document.getElementById('totalSales').textContent = `$${data.totalSales}`;
+      document.getElementById('totalTicketSales').textContent = data.totalTickets;
+      const standardTicketEl = document.getElementById('standardTicket');
+      const standard = data.ticketTypes.find(t => t.type_name === 'Standard');
+      if (standard) {
+        standardTicketEl.textContent = `${standard.type_name}: ${standard.available_tickets} available`;
+      } else {
+        standardTicketEl.textContent = 'Standard ticket not found';
+      }
+      const breakdownEl = document.getElementById('ticketTypeBreakdown');
+      let breakdownHTML = '<ul>';
+      data.ticketTypes.forEach(t => {
+        breakdownHTML += `<li>${t.type_name}: ${t.sold_tickets} sold / ${t.available_tickets} available</li>`;
+      });
+      breakdownHTML += '</ul>';
+      breakdownEl.innerHTML = breakdownHTML;
+    } catch (e) {
+      console.error(e);
+      alert('Failed to load dashboard stats');
+    }
+  }
+
+  // Fetch recent transactions (generic for dashboard & wallet)
+  async function fetchRecentTransactions(eventId, tableBodySelector) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/dashboard/recentTransactions/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch recent transactions');
+      const transactions = await response.json();
+
+      const tbody = document.querySelector(tableBodySelector);
+      tbody.innerHTML = '';
+      if (transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">No transactions found.</td></tr>';
+        return;
+      }
+      transactions.forEach(tx => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${tx.name || 'Anonymous'}</td>
+          <td>${tx.ticket_type || '—'}</td>
+          <td>${tx.quantity}</td>
+          <td>$${tx.total_price}</td>
+          <td>${new Date(tx.purchase_date).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch (e) {
+      console.error(e);
+      const tbody = document.querySelector(tableBodySelector);
+      tbody.innerHTML = '<tr><td colspan="5">Failed to load transactions.</td></tr>';
+    }
+  }
+
+  // Load past events for Events tab
+  async function loadPastEvents() {
+    try {
+      const response = await fetch(`http://localhost:3000/api/event/past/${adminId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch past events');
+      const pastEvents = await response.json();
+      const pastEventsList = document.getElementById('pastEventsList');
+      pastEventsList.innerHTML = '';
+      if (!pastEvents.length) {
+        pastEventsList.innerHTML = '<li>No past events found.</li>';
+        return;
+      }
+      pastEvents.forEach(event => {
+        const li = document.createElement('li');
+        li.textContent = `${event.name} - ${new Date(event.date).toLocaleDateString()} - Sales: $${event.total_sales}`;
+        pastEventsList.appendChild(li);
+      });
+    } catch (e) {
+      console.error(e);
+      document.getElementById('pastEventsList').innerHTML = '<li>Failed to load past events.</li>';
+    }
+  }
+
+  // Load event details into form for Events tab
+  async function loadCurrentEventDetails(eventId) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/event/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch event details');
+      const event = await response.json();
+      document.getElementById('eventName').value = event.name || '';
+      document.getElementById('eventDate').value = event.date ? event.date.split('T')[0] : '';
+      document.getElementById('eventLocation').value = event.location || '';
+      document.getElementById('currentEventId').textContent = eventId;
+      document.getElementById('currentEventTotalSales').textContent = event.total_sales || 0;
+      document.getElementById('currentEventTotalTickets').textContent = event.total_tickets || 0;
+      document.getElementById('eventsSection').dataset.currentEventId = eventId;
+    } catch (e) {
+      console.error(e);
+      alert('Failed to load event details');
+    }
+  }
+
+  // Update event details form submit
+  document.getElementById('eventUpdateForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const eventId = document.getElementById('eventsSection').dataset.currentEventId;
+    if (!eventId) return alert('No event loaded.');
+
+    const updateData = {
+      name: document.getElementById('eventName').value.trim(),
+      date: document.getElementById('eventDate').value,
+      location: document.getElementById('eventLocation').value.trim(),
+    };
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/event/update/${eventId}`, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(updateData)
+      });
+      if (!response.ok) throw new Error('Failed to update event');
+      alert('Event details updated successfully!');
+      loadCurrentEventDetails(eventId);
+    } catch (e) {
+      console.error(e);
+      alert('Error updating event details');
+    }
+  });
+
+  let ticketFormCount = 0;
+
+  // Add a new ticket form, optionally with existing ticket data
+  function addTicketForm(ticket = {}) {
+    ticketFormCount++;
+    const container = document.getElementById('ticketTypesContainer');
+
+    const ticketType = ticket.type_name || '';
+    const price = ticket.price || '';
+    const available = ticket.available_tickets || 0;
+    const discount = ticket.discount || 0;
+
+    const ticketId = ticket.id || '';
+
+    const formId = `ticketForm${ticketFormCount}`;
+
+    const div = document.createElement('div');
+    div.className = 'ticket-form-group';
+    div.id = formId;
+    div.style.border = '1px solid #ccc';
+    div.style.padding = '10px';
+    div.style.marginBottom = '15px';
+    div.style.borderRadius = '8px';
+
+    div.innerHTML = `
+      <input type="hidden" name="ticketId[]" value="${ticketId}">
+
+      <label>Ticket Type:</label><br>
+      <input type="text" name="ticketType[]" required placeholder="Ticket Type" value="${ticketType}"><br><br>
+
+      <label>Ticket Price:</label><br>
+      <input type="number" name="ticketPrice[]" min="0" step="0.01" required value="${price}"><br><br>
+
+      <label>Available Tickets:</label><br>
+      <input type="number" name="ticketAvailable[]" min="0" required value="${available}"><br><br>
+
+      <label>Discount (%):</label><br>
+      <input type="number" name="ticketDiscount[]" min="0" max="100" value="${discount}"><br><br>
+
+      <button type="button" onclick="removeTicketForm('${formId}')">Remove Ticket Type</button>
+    `;
+
+    container.appendChild(div);
+  }
+
+  function removeTicketForm(id) {
+    const form = document.getElementById(id);
+    if (form) form.remove();
+  }
+
+  // Load ticket details into form for current event
+  async function loadTicketDetails(eventId) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tickets/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch ticket details');
+      const tickets = await response.json();
+
+      const container = document.getElementById('ticketTypesContainer');
+      container.innerHTML = '';
+      if (tickets.length === 0) {
+        container.innerHTML = '<p>No ticket types found.</p>';
+        return;
+      }
+      tickets.forEach(ticket => {
+        addTicketForm(ticket);
+      });
+    } catch (e) {
+      console.error(e);
+      alert('Failed to load ticket details');
+    }
+  }
+
+  // Handle ticket details form submission
+  document.getElementById('ticketDetailsForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const eventId = document.getElementById('eventsSection').dataset.currentEventId;
+    if (!eventId) return alert('No event loaded.');
+
+    const form = e.target;
+
+    const ticketIds = Array.from(form.querySelectorAll('input[name="ticketId[]"]')).map(i => i.value);
+    const ticketTypes = Array.from(form.querySelectorAll('input[name="ticketType[]"]')).map(i => i.value.trim());
+    const ticketPrices = Array.from(form.querySelectorAll('input[name="ticketPrice[]"]')).map(i => parseFloat(i.value));
+    const ticketAvailable = Array.from(form.querySelectorAll('input[name="ticketAvailable[]"]')).map(i => parseInt(i.value, 10));
+    const ticketDiscount = Array.from(form.querySelectorAll('input[name="ticketDiscount[]"]')).map(i => parseInt(i.value, 10));
+
+    const ticketsData = ticketTypes.map((type, idx) => ({
+      id: ticketIds[idx] || null,
+      type_name: type,
+      price: ticketPrices[idx],
+      available_tickets: ticketAvailable[idx],
+      discount: ticketDiscount[idx] || 0,
+    }));
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/tickets/update/${eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tickets: ticketsData })
+      });
+      if (!response.ok) throw new Error('Failed to update tickets');
+      alert('Ticket details updated successfully!');
+      await loadTicketDetails(eventId);
+    } catch (e) {
+      console.error(e);
+      alert('Error updating ticket details');
+    }
+  });
+
+  // Wallet section functions
+  async function loadWalletTotalSales(eventId) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/dashboard/walletTotalSales/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch wallet total sales');
+      const data = await response.json();
+      document.getElementById('walletTotalSales').textContent = `$${data.totalSales}`;
+    } catch (e) {
+      console.error(e);
+      alert('Failed to load wallet total sales');
+    }
+  }
+
+  async function loadPayoutAccountFromEvent(eventId) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/dashboard/payoutAccount/${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch payout account');
+      const data = await response.json();
+
+      document.getElementById('bankSelect').value = data.bank_id || '';
+      document.getElementById('accountNumberInput').value = data.account_number || '';
+      document.getElementById('accountHolderInput').value = data.account_holder || '';
+    } catch (e) {
+      console.error(e);
+      alert('Failed to load payout account details');
+    }
+  }
+
+  async function loadBanks() {
+    try {
+      const response = await fetch('http://localhost:3000/api/bank/getAllBanks', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Failed to fetch banks');
+      const banks = await response.json();
+
+      const bankSelect = document.getElementById('bankSelect');
+      bankSelect.innerHTML = '<option value="">Select a bank</option>';
+
+      banks.forEach(bank => {
+        const option = document.createElement('option');
+        option.value = bank.id;
+        option.textContent = bank.name;
+        bankSelect.appendChild(option);
+      });
+    } catch (e) {
+      console.error(e);
+      alert('Failed to load banks');
+    }
+  }
+
+  // Track if banks are already loaded to avoid multiple fetches
+  let banksLoaded = false;
+
+  // Navigation button event handlers
+  document.getElementById('dashboardTab').addEventListener('click', async () => {
+    showTab('dashboard');
+    const eventId = await getEventIdFromAdmin();
+    if (eventId) {
+      await fetchEventStats(eventId);
+      await fetchRecentTransactions(eventId, '#transactionsTable tbody');
+    }
+  });
+
+  document.getElementById('eventsTab').addEventListener('click', async () => {
+    showTab('events');
+    const eventId = await getEventIdFromAdmin();
+    if (eventId) {
+      document.getElementById('eventsSection').dataset.currentEventId = eventId;
+      await loadCurrentEventDetails(eventId);
+      await loadPastEvents();
+      await loadTicketDetails(eventId);
+    }
+  });
+
+  document.getElementById('walletTab').addEventListener('click', async () => {
+    showTab('wallet');
+    const eventId = await getEventIdFromAdmin();
+    if (eventId) {
+      document.getElementById('walletSection').dataset.currentEventId = eventId;
+      await loadWalletTotalSales(eventId);
+      await fetchRecentTransactions(eventId, '#walletTransactionsTable tbody');
+
+      if (!banksLoaded) {
+        await loadBanks();
+        banksLoaded = true;
+      }
+
+      await loadPayoutAccountFromEvent(eventId);
+    }
+  });
+
+  // Logout button
+  document.getElementById('logout').addEventListener('click', () => {
+    sessionStorage.clear();
+    window.location.href = '../login/login.html';
+  });
+
+  // Initial page load: show dashboard by default
+  window.addEventListener('DOMContentLoaded', async () => {
+    showTab('dashboard');
+    const eventId = await getEventIdFromAdmin();
+    if (eventId) {
+      await fetchEventStats(eventId);
+      await fetchRecentTransactions(eventId, '#transactionsTable tbody');
+    }
+  });
+
+  // Contact and Settings buttons (if needed)
+  document.getElementById('contactTab').addEventListener('click', () => alert('Contact support at support@example.com'));
+  document.getElementById('settingsTab').addEventListener('click', () => alert('Settings page is under construction'));
+
+</script>
+</body>
 </html>

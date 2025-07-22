@@ -382,4 +382,58 @@ const scanTicket = async (req, res) => {
     }
 };
 
-module.exports = { createTicket, createTicketForAFriend, scanTicket };
+
+
+
+// Get tickets for an event
+const getTicketsByEventId = async (eventId) => {
+  const result = await db.query(
+    `SELECT id, type_name, price, available_tickets, discount 
+     FROM ticket_types WHERE event_id = $1`,
+    [eventId]
+  );
+  return result.rows;
+};
+
+// Update or insert tickets for event
+const updateTicketsByEventId = async (eventId, tickets) => {
+  for (const ticket of tickets) {
+    if (ticket.id) {
+      // Update existing ticket:
+      // First, get current availability from DB
+      const existingRes = await db.query(
+        'SELECT available_tickets FROM ticket_types WHERE id = $1',
+        [ticket.id]
+      );
+      if (!existingRes.rows.length) continue; // skip if not found
+
+      const currentAvail = existingRes.rows[0].available_tickets || 0;
+
+      // We assume ticket.available_tickets = currentAvail + addTickets from frontend,
+      // so just update with this new value
+      await db.query(
+        `UPDATE ticket_types SET
+          type_name = $1,
+          price = $2,
+          available_tickets = $3,
+          discount = $4,
+          updated_at = CURRENT_TIMESTAMP
+         WHERE id = $5`,
+        [ticket.type_name, ticket.price, ticket.available_tickets, ticket.discount, ticket.id]
+      );
+    } else {
+      // Insert new ticket type
+      await db.query(
+        `INSERT INTO ticket_types
+         (event_id, type_name, price, available_tickets, discount)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [eventId, ticket.type_name, ticket.price, ticket.available_tickets, ticket.discount]
+      );
+    }
+  }
+};
+
+
+
+module.exports = { createTicket, createTicketForAFriend, scanTicket,getTicketsByEventId,
+  updateTicketsByEventId, };
